@@ -1,0 +1,55 @@
+# Archivos de compilación
+bin/
+obj/
+out/
+
+# Paquetes de dependencias
+*.nupkg
+*.snupkg
+*.nuspec
+*.dll
+*.exe
+*.log
+
+# Configuración de usuario de VS Code / Rider
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Archivos de publicación
+publish/
+app.publish/
+
+# Configuración de cobertura de pruebas
+*.coverage
+*.coveragexml
+TestResults/
+coverage/
+
+# Configuración local de secretos
+secrets.json
+*.secret.json
+
+# Logs
+*.log
+logs/
+
+# Archivos generados por el sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de entorno
+.env
+.env.*
+
+# Certificados de desarrollo (Kestrel, HTTPS)
+*.pfx
+*.p12
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
