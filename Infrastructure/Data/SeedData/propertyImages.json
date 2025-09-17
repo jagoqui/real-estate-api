@@ -1,0 +1,17 @@
+[
+  {
+    "IdProperty": "replace_with_property_id_1",
+    "File": "https://picsum.photos/400/300?random=10",
+    "Enabled": true
+  },
+  {
+    "IdProperty": "replace_with_property_id_2",
+    "File": "https://picsum.photos/400/300?random=11",
+    "Enabled": true
+  },
+  {
+    "IdProperty": "replace_with_property_id_3",
+    "File": "https://picsum.photos/400/300?random=12",
+    "Enabled": true
+  }
+]

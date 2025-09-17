@@ -1,0 +1,23 @@
+[
+  {
+    "DateSale": "2022-01-10T00:00:00",
+    "Name": "Venta inicial",
+    "Value": 350000000,
+    "Tax": 5000000,
+    "IdProperty": "replace_with_property_id_1"
+  },
+  {
+    "DateSale": "2023-06-05T00:00:00",
+    "Name": "Reventa",
+    "Value": 460000000,
+    "Tax": 7000000,
+    "IdProperty": "replace_with_property_id_2"
+  },
+  {
+    "DateSale": "2024-03-18T00:00:00",
+    "Name": "Transferencia familiar",
+    "Value": 600000000,
+    "Tax": 8000000,
+    "IdProperty": "replace_with_property_id_3"
+  }
+]

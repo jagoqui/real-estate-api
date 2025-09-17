@@ -12,4 +12,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 
+  <!-- TODO: Revisar si es necesario -->
+  <!-- 👇 This copies the seed JSON files to bin/Debug/net9.0 -->
+  <ItemGroup>
+    <None Update="Infrastructure\Data\SeedData\*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Data\SeedData\%(Filename)%(Extension)</TargetPath>
+    </None>
+  </ItemGroup>
+
+
 </Project>

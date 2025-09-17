@@ -7,10 +7,18 @@ namespace RealEstate.Domain.Entities
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = null!;
+        public string IdOwner { get; set; } = null!;
 
-        public string FullName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string Phone { get; set; } = null!;
+        [BsonElement("Name")]
+        public string Name { get; set; } = null!;
+
+        [BsonElement("Address")]
+        public string Address { get; set; } = null!;
+
+        [BsonElement("Photo")]
+        public string Photo { get; set; } = null!;
+
+        [BsonElement("Birthday")]
+        public DateTime Birthday { get; set; }
     }
 }

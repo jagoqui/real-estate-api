@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "Casa en Medellín",
+    "Address": "Cra 50 #10-20, Medellín",
+    "Price": 350000000,
+    "CodeInternal": "PRP-001",
+    "Year": 2015,
+    "IdOwner": "replace_with_owner_id_1"
+  },
+  {
+    "Name": "Apartamento en Bogotá",
+    "Address": "Calle 100 #15-30, Bogotá",
+    "Price": 450000000,
+    "CodeInternal": "PRP-002",
+    "Year": 2018,
+    "IdOwner": "replace_with_owner_id_2"
+  },
+  {
+    "Name": "Finca en el Quindío",
+    "Address": "Km 8 Vía Armenia - Pereira, Quindío",
+    "Price": 600000000,
+    "CodeInternal": "PRP-003",
+    "Year": 2020,
+    "IdOwner": "replace_with_owner_id_3"
+  }
+]

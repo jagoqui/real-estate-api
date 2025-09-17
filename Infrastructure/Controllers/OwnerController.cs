@@ -1,34 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using RealEstate.Domain.Entities;
-using RealEstate.Infrastructure.Persistence;
 
-namespace RealEstate.Infrastructure.Controllers
+namespace RealEstate.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class OwnerController : ControllerBase
     {
-        private readonly OwnerRepository _repository;
+        private readonly IMongoCollection<Owner> _owners;
 
-        public OwnerController(OwnerRepository repository)
+        public OwnerController(IMongoDatabase database)
         {
-            _repository = repository;
+            _owners = database.GetCollection<Owner>("Owners");
         }
-
-        // GET api/owner
+        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Owner>>> GetAll()
+        public async Task<IActionResult> GetOwners()
         {
-            var owners = await _repository.GetAllAsync();
+            var owners = await _owners.Find(_ => true).ToListAsync();
             return Ok(owners);
-        }
-
-        // POST api/owner
-        [HttpPost]
-        public async Task<ActionResult<Owner>> Create([FromBody] Owner owner)
-        {
-            await _repository.CreateAsync(owner);
-            return CreatedAtAction(nameof(GetAll), new { id = owner.Id }, owner);
         }
     }
 }

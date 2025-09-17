@@ -1,68 +1,89 @@
 using MongoDB.Driver;
 using RealEstate.Domain.Entities;
+using System.Text.Json;
 
 namespace RealEstate.Infrastructure.Seed
 {
     public class DatabaseSeeder
     {
-        private readonly IMongoCollection<Property> _properties;
-        private readonly IMongoCollection<Owner> _owners;
+        private readonly IMongoDatabase _database;
 
         public DatabaseSeeder(IMongoDatabase database)
         {
-            _properties = database.GetCollection<Property>("Properties");
-            _owners = database.GetCollection<Owner>("Owners");
+            _database = database;
         }
 
         public async Task SeedAsync()
         {
-            // Seed Owners
-            if (await _owners.CountDocumentsAsync(_ => true) == 0)
+            await SeedCollectionAsync<Owner>("Owners", "owners.json");
+            await SeedCollectionAsync<Property>("Properties", "properties.json");
+            await SeedCollectionAsync<PropertyImage>("PropertyImages", "propertyImages.json");
+            await SeedCollectionAsync<PropertyTrace>("PropertyTraces", "propertyTraces.json");
+        }
+
+        private async Task SeedCollectionAsync<T>(string collectionName, string fileName)
+        {
+            var collection = _database.GetCollection<T>(collectionName);
+
+            if (await collection.CountDocumentsAsync(_ => true) == 0)
             {
-                var sampleOwners = new List<Owner>
+                var filePath = Path.Combine(AppContext.BaseDirectory, "Infrastructure", "Data", "SeedData", fileName);
+
+                if (!File.Exists(filePath))
+                    throw new FileNotFoundException($"Seed file not found: {filePath}");
+
+                var jsonData = await File.ReadAllTextAsync(filePath);
+                var records = JsonSerializer.Deserialize<List<T>>(jsonData);
+
+                if (records != null && records.Count > 0)
                 {
-                    new Owner { FullName = "Juan Pérez", Email = "juan.perez@example.com", Phone = "3001234567" },
-                    new Owner { FullName = "María Gómez", Email = "maria.gomez@example.com", Phone = "3109876543" },
-                    new Owner { FullName = "Carlos López", Email = "carlos.lopez@example.com", Phone = "3014567890" }
-                };
-
-                await _owners.InsertManyAsync(sampleOwners);
-            }
-
-            // Seed Properties solo si está vacío
-            if (await _properties.CountDocumentsAsync(_ => true) == 0)
-            {
-                var owners = await _owners.Find(_ => true).ToListAsync();
-
-                var sampleProperties = new List<Property>
-                {
-                    new Property
+                    if (typeof(T) == typeof(Property))
                     {
-                        IdOwner = owners[0].Id,
-                        Name = "Casa en Medellín",
-                        Address = "Cra 50 #10-20, Medellín",
-                        Price = 350000000,
-                        ImageUrl = "https://picsum.photos/400/300?random=1"
-                    },
-                    new Property
-                    {
-                        IdOwner = owners[1].Id,
-                        Name = "Apartamento en Bogotá",
-                        Address = "Calle 100 #15-30, Bogotá",
-                        Price = 450000000,
-                        ImageUrl = "https://picsum.photos/400/300?random=2"
-                    },
-                    new Property
-                    {
-                        IdOwner = owners[2].Id,
-                        Name = "Finca en el Quindío",
-                        Address = "Km 8 Vía Armenia - Pereira, Quindío",
-                        Price = 600000000,
-                        ImageUrl = "https://picsum.photos/400/300?random=3"
+                        var owners = await _database.GetCollection<Owner>("Owners")
+                            .Find(_ => true).ToListAsync();
+
+                        var props = records.Cast<Property>().ToList();
+
+                        for (int i = 0; i < props.Count; i++)
+                        {
+                            props[i].IdOwner = owners[i % owners.Count].IdOwner;
+                        }
+
+                        await _database.GetCollection<Property>("Properties").InsertManyAsync(props);
                     }
-                };
+                    else if (typeof(T) == typeof(PropertyImage))
+                    {
+                        var properties = await _database.GetCollection<Property>("Properties")
+                            .Find(_ => true).ToListAsync();
 
-                await _properties.InsertManyAsync(sampleProperties);
+                        var images = records.Cast<PropertyImage>().ToList();
+
+                        for (int i = 0; i < images.Count; i++)
+                        {
+                            images[i].IdProperty = properties[i % properties.Count].IdProperty;
+                        }
+
+                        await _database.GetCollection<PropertyImage>("PropertyImages").InsertManyAsync(images);
+                    }
+                    else if (typeof(T) == typeof(PropertyTrace))
+                    {
+                        var properties = await _database.GetCollection<Property>("Properties")
+                            .Find(_ => true).ToListAsync();
+
+                        var traces = records.Cast<PropertyTrace>().ToList();
+
+                        for (int i = 0; i < traces.Count; i++)
+                        {
+                            traces[i].IdProperty = properties[i % properties.Count].IdProperty;
+                        }
+
+                        await _database.GetCollection<PropertyTrace>("PropertyTraces").InsertManyAsync(traces);
+                    }
+                    else
+                    {
+                        await collection.InsertManyAsync(records);
+                    }
+                }
             }
         }
     }

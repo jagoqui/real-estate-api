@@ -1,80 +1,100 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using RealEstate.Domain.Entities;
+using RealEstate.Application.Contracts;
 using RealEstate.Infrastructure.DTOs;
+using MongoDB.Bson;
 
 namespace RealEstate.Infrastructure.Persistence
 {
-    public class PropertyRepository
+    public class PropertyRepository : IPropertyRepository
     {
         private readonly IMongoCollection<Property> _properties;
         private readonly IMongoCollection<Owner> _owners;
+        private readonly IMongoCollection<PropertyImage> _images;
 
         public PropertyRepository(IMongoDatabase database)
         {
             _properties = database.GetCollection<Property>("Properties");
             _owners = database.GetCollection<Owner>("Owners");
+            _images = database.GetCollection<PropertyImage>("PropertyImages");
         }
 
-        // Obtener todas las propiedades
-        public async Task<List<Property>> GetAllAsync()
+        public async Task<IEnumerable<PropertyWithOwnerDto>> GetPropertiesAsync(
+            string? name,
+            string? address,
+            decimal? minPrice,
+            decimal? maxPrice)
         {
-            return await _properties.Find(_ => true).ToListAsync();
+            var filter = Builders<Property>.Filter.Empty;
+
+            if (!string.IsNullOrEmpty(name))
+                filter &= Builders<Property>.Filter.Regex(p => p.Name, new BsonRegularExpression(name, "i"));
+
+            if (!string.IsNullOrEmpty(address))
+                filter &= Builders<Property>.Filter.Regex(p => p.Address, new BsonRegularExpression(address, "i"));
+
+            if (minPrice.HasValue)
+                filter &= Builders<Property>.Filter.Gte(p => p.Price, minPrice.Value);
+
+            if (maxPrice.HasValue)
+                filter &= Builders<Property>.Filter.Lte(p => p.Price, maxPrice.Value);
+
+            var propertyList = await _properties.Find(filter).ToListAsync();
+
+            // Combinar con owners e imágenes (solo una imagen habilitada)
+            var result = from prop in propertyList
+                         join owner in _owners.AsQueryable() on prop.IdOwner equals owner.IdOwner
+                         join img in _images.AsQueryable() on prop.IdProperty equals img.IdProperty into propImgs
+                         select new PropertyWithOwnerDto
+                         {
+                             IdOwner = owner.IdOwner,
+                             Name = owner.Name,
+                             Address = prop.Address,
+                             Price = prop.Price,
+                             Image = propImgs.FirstOrDefault(i => i.Enabled)?.File ?? string.Empty
+                         };
+
+            return result.ToList();
         }
 
-        // Insertar una nueva propiedad
-        public async Task CreateAsync(Property property)
+        public async Task<Property?> GetByIdAsync(string id)
+        {
+            return await _properties.Find(p => p.IdProperty == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<PropertyWithOwnerDto?> GetWithOwnerByIdAsync(string id)
+        {
+            var prop = await GetByIdAsync(id);
+            if (prop == null) return null;
+
+            var owner = await _owners.Find(o => o.IdOwner == prop.IdOwner).FirstOrDefaultAsync();
+            var image = await _images.Find(i => i.IdProperty == prop.IdProperty && i.Enabled).FirstOrDefaultAsync();
+
+            if (owner == null) return null;
+
+            return new PropertyWithOwnerDto
+            {
+                IdOwner = owner.IdOwner,
+                Name = owner.Name,
+                Address = prop.Address,
+                Price = prop.Price,
+                Image = image?.File ?? string.Empty
+            };
+        }
+
+        public async Task AddAsync(Property property)
         {
             await _properties.InsertOneAsync(property);
         }
 
-        // Filtrar propiedades por nombre, dirección y rango de precios
-        public async Task<List<Property>> FilterAsync(string? name, string? address, decimal? minPrice, decimal? maxPrice)
+        public async Task UpdateAsync(string id, Property property)
         {
-            var filterBuilder = Builders<Property>.Filter;
-            var filters = new List<FilterDefinition<Property>>();
-
-            if (!string.IsNullOrWhiteSpace(name))
-                filters.Add(filterBuilder.Regex(p => p.Name, new BsonRegularExpression(name, "i")));
-
-            if (!string.IsNullOrWhiteSpace(address))
-                filters.Add(filterBuilder.Regex(p => p.Address, new BsonRegularExpression(address, "i")));
-
-            if (minPrice.HasValue)
-                filters.Add(filterBuilder.Gte(p => p.Price, minPrice.Value));
-
-            if (maxPrice.HasValue)
-                filters.Add(filterBuilder.Lte(p => p.Price, maxPrice.Value));
-
-            var finalFilter = filters.Any() ? filterBuilder.And(filters) : FilterDefinition<Property>.Empty;
-            return await _properties.Find(finalFilter).ToListAsync();
+            await _properties.ReplaceOneAsync(p => p.IdProperty == id, property);
         }
 
-        // Traer propiedades junto con la info del dueño
-        public async Task<List<PropertyWithOwnerDto>> GetWithOwnersAsync()
+        public async Task DeleteAsync(string id)
         {
-            var query = _properties.AsQueryable()
-                          .Join(_owners.AsQueryable(),
-                                p => p.IdOwner,
-                                o => o.Id,
-                                (p, o) => new PropertyWithOwnerDto
-                                {
-                                    Id = p.Id,
-                                    Name = p.Name,
-                                    Address = p.Address,
-                                    Price = p.Price,
-                                    ImageUrl = p.ImageUrl,
-                                    OwnerId = o.Id,
-                                    OwnerName = o.FullName,
-                                    OwnerEmail = o.Email,
-                                    OwnerPhone = o.Phone
-                                });
-
-            return await query.ToListAsync();
+            await _properties.DeleteOneAsync(p => p.IdProperty == id);
         }
     }
 }
