@@ -1,7 +1,7 @@
 using RealEstate.Application.Contracts;
 using RealEstate.Infrastructure.DTOs;
 
-namespace RealEstate.Application.Services
+namespace RealEstate.Infrastructure.API.Services
 {
     public class PropertyService : IPropertyService
     {

@@ -2,7 +2,7 @@ using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.Exceptions;
 
-namespace RealEstate.Application.Services
+namespace RealEstate.Infrastructure.API.Services
 {
     public class OwnerService : IOwnerService
     {
