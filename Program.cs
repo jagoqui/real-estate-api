@@ -2,9 +2,8 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using RealEstate.Infrastructure.Config;
 using RealEstate.Application.Contracts;
-using RealEstate.Application.Services;
+using RealEstate.Infrastructure.API.Services;
 using RealEstate.Infrastructure.API.Repositories;
-using RealEstate.Infrastructure.Seed;
 using RealEstate.Infrastructure.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
