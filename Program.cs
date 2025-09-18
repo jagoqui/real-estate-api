@@ -63,14 +63,5 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 
-// =======================
-// Initial Database Seeder
-// =======================
-using (var scope = app.Services.CreateScope())
-{
-    var database = scope.ServiceProvider.GetRequiredService<IMongoDatabase>();
-    var seeder = new DatabaseSeeder(database);
-    await seeder.SeedAsync();
-}
 
 app.Run();
