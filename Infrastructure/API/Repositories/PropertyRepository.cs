@@ -4,7 +4,7 @@ using RealEstate.Application.Contracts;
 using RealEstate.Infrastructure.DTOs;
 using MongoDB.Bson;
 
-namespace RealEstate.Infrastructure.Persistence
+namespace RealEstate.Infrastructure.API.Repositories
 {
     public class PropertyRepository : IPropertyRepository
     {
