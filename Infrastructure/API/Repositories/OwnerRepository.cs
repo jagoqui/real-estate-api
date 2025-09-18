@@ -2,7 +2,7 @@ using MongoDB.Driver;
 using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
 
-namespace RealEstate.Infrastructure.Persistence
+namespace RealEstate.Infrastructure.API.Repositories
 {
     public class OwnerRepository : IOwnerRepository
     {
@@ -23,14 +23,17 @@ namespace RealEstate.Infrastructure.Persistence
             return await _owners.Find(o => o.IdOwner == id).FirstOrDefaultAsync();
         }
 
-        public async Task AddOwnerAsync(Owner owner)
+        public async Task<Owner> AddOwnerAsync(Owner owner)
         {
             await _owners.InsertOneAsync(owner);
+            return owner;
         }
 
-        public async Task UpdateOwnerAsync(string id, Owner owner)
+        public async Task<Owner?> UpdateOwnerAsync(string id, Owner owner)
         {
             await _owners.ReplaceOneAsync(o => o.IdOwner == id, owner);
+
+            return owner;
         }
 
         public async Task DeleteOwnerAsync(string id)
