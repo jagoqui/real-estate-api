@@ -142,6 +142,7 @@ curl -X POST http://localhost:5000/api/properties \
 ```
 
 #### Filtrar propiedades por precio
+
 ```bash
 curl "http://localhost:5000/api/properties/search?minPrice=200000000&maxPrice=300000000"
 ```
