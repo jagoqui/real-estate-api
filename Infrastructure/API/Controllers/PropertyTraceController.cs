@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using RealEstate.Domain.Entities;
 
-namespace RealEstate.API.Controllers
+namespace RealEstate.Infrastructure.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
