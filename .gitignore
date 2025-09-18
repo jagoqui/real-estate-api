@@ -42,8 +42,7 @@ logs/
 Thumbs.db
 
 # Archivos de configuración de entorno
-.env
-.env.*
+/environments
 
 # Certificados de desarrollo (Kestrel, HTTPS)
 *.pfx
