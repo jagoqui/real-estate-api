@@ -100,8 +100,13 @@ real-estate-api/
    ```
 
 4. **Ejecutar la aplicación**
+
    ```bash
    dotnet watch run
+   ```
+
+   ```bash
+     docker run -it --rm --env-file environments/.env -p 5247:8080 realestate-api
    ```
 
 ## Endpoints de la API

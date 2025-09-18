@@ -17,13 +17,21 @@ builder.Services.Configure<DatabaseSettings>(
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+
+    if (string.IsNullOrEmpty(settings.ConnectionString))
+        throw new InvalidOperationException("MongoDB ConnectionString is not configured!");
+
     return new MongoClient(settings.ConnectionString);
 });
 
-builder.Services.AddScoped<IMongoDatabase>(sp =>
+builder.Services.AddScoped(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
     var client = sp.GetRequiredService<IMongoClient>();
+
+    if (string.IsNullOrEmpty(settings.DatabaseName))
+        throw new InvalidOperationException("MongoDB DatabaseName is not configured!");
+
     return client.GetDatabase(settings.DatabaseName);
 });
 
