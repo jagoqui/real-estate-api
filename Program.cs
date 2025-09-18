@@ -10,7 +10,7 @@ using RealEstate.Infrastructure.API.Conventions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string envPath = builder.Environment.IsDevelopment() ? "environments/.env" : Env.DEFAULT_ENVFILENAME;
+string envPath = builder.Environment.IsDevelopment() ? "environments/.env" : "/etc/secrets/.env";
 
 if (!string.IsNullOrEmpty(envPath) && File.Exists(envPath))
 {
