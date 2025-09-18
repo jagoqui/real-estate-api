@@ -41,7 +41,6 @@ namespace RealEstate.Infrastructure.API.Repositories
 
             var propertyList = await _properties.Find(filter).ToListAsync();
 
-            // Combinar con owners e imágenes (solo una imagen habilitada)
             var result = from prop in propertyList
                          join owner in _owners.AsQueryable() on prop.IdOwner equals owner.IdOwner
                          join img in _images.AsQueryable() on prop.IdProperty equals img.IdProperty into propImgs
