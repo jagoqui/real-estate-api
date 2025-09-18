@@ -1,15 +1,17 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-COPY *.csproj ./
+# Copiar solo el csproj y restaurar
+COPY RealEstateApi.csproj ./
 RUN dotnet restore
 
+# Copiar todo el proyecto y publicar
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -o /app/out
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app/out .
-ENTRYPOINT ["dotnet", "RealEstate.API.dll"]
+ENTRYPOINT ["dotnet", "RealEstateApi.dll"]
