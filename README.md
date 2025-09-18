@@ -230,6 +230,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 ## Contacto
 
 **Jaidiver Gómez Quintero**
+
 - GitHub: [@jagoqui](https://github.com/jagoqui)
 
 ---
