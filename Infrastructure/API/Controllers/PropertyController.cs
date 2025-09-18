@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 
-namespace RealEstate.API.Controllers
+namespace RealEstate.Infrastructure.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -11,6 +11,7 @@ namespace RealEstate.API.Controllers
 
         public PropertyController(IPropertyService propertyService)
         {
+            Console.WriteLine("PropertyController instantiated.");
             _propertyService = propertyService;
         }
 
