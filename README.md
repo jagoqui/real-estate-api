@@ -181,6 +181,7 @@ tests/RealEstate.Tests/
 Para el desarrollo del frontend, se recomienda:
 
 ### React
+
 ```bash
 npx create-react-app real-estate-frontend
 cd real-estate-frontend
@@ -188,6 +189,7 @@ npm install axios react-router-dom
 ```
 
 ### Next.js
+
 ```bash
 npx create-next-app@latest real-estate-frontend
 cd real-estate-frontend
