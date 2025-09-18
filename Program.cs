@@ -3,13 +3,14 @@ using MongoDB.Driver;
 using RealEstate.Infrastructure.Config;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.Services;
-using RealEstate.Infrastructure.Persistence;
+using RealEstate.Infrastructure.API.Repositories;
 using RealEstate.Infrastructure.Seed;
+using RealEstate.Infrastructure.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =======================
-// Configuración MongoDB
+// MongoDB Configuration
 // =======================
 builder.Services.Configure<DatabaseSettings>(
     builder.Configuration.GetSection("DatabaseSettings"));
@@ -28,15 +29,16 @@ builder.Services.AddScoped<IMongoDatabase>(sp =>
 });
 
 // =======================
-// Inyección de dependencias
+// Dependency Injection
 // =======================
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 
 builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddScoped<IOwnerService, OwnerService>(); // <- Added registration
 
 // =======================
-// Configuración API
+// API Configuration
 // =======================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -56,10 +58,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
+// Global error handling middleware
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.MapControllers();
 
 // =======================
-// Ejecutar semilla inicial
+// Initial Database Seeder
 // =======================
 using (var scope = app.Services.CreateScope())
 {
