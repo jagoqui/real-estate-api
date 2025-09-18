@@ -84,30 +84,29 @@ real-estate-api/
    dotnet restore
    ```
 
-3. **Configurar MongoDB**
+### 3. Configurar MongoDB y variables de entorno
 
-   - Instalar MongoDB localmente o configurar una instancia en MongoDB Atlas
-   - Configurar las credenciales de conexión utilizando **dotnet user-secrets**:
+- Crear un archivo `.env` en la raíz del proyecto con las siguientes variables (no incluyas valores reales):
 
-   ```bash
-   # Inicializar user-secrets (solo la primera vez)
-   dotnet user-secrets init
+  ```env
+  ASPNETCORE_URLS=http://+:8080
+  DatabaseSettings__ConnectionString=mongodb+srv://<usuario>:<contraseña>@<tu-cluster>.mongodb.net/?retryWrites=true&w=majority&appName=RealEstateCluster
+  DatabaseSettings__DatabaseName=<NombreDeTuBaseDeDatos>
+  ```
 
-   # Configurar la cadena de conexión a MongoDB
-   dotnet user-secrets set "DatabaseSettings:ConnectionString" "mongodb+srv://<usuario>:<contraseña>@<tu-cluster>.mongodb.net/?retryWrites=true&w=majority&appName=RealEstateCluster"
-   dotnet user-secrets set "DatabaseSettings:DatabaseName" "<NombreDeTuBaseDeDatos>"
+### 4. Ejecutar la aplicación
 
-   ```
+- #### Levantar en local con dotnet
 
-4. **Ejecutar la aplicación**
+  ```bash
+  dotnet watch run
+  ```
 
-   ```bash
-   dotnet watch run
-   ```
+- #### Levantar en local con Docker
 
-   ```bash
-     docker run -it --rm --env-file environments/.env -p 5247:8080 realestate-api
-   ```
+  ```bash
+  docker run -it --rm --env-file .env -p 5247:8080 realestate-api
+  ```
 
 ## Endpoints de la API
 
@@ -241,3 +240,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 ---
 
 > **Nota**: Esta es una prueba técnica diseñada para evaluar habilidades en desarrollo fullstack con .NET y React/Next.js. El objetivo es demostrar competencias en arquitectura de software, desarrollo de APIs, gestión de bases de datos y integración frontend-backend.
+
+```
+
+```
