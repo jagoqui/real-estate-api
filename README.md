@@ -7,17 +7,20 @@ Esta es la API backend de una **prueba técnica fullstack para Sr. Frontend Deve
 ## Tecnologías Utilizadas
 
 ### Backend
+
 - **.NET 8/9** (C#)
 - **MongoDB** como base de datos NoSQL
 - **NUnit** para pruebas unitarias
 
 ### Frontend (Recomendado)
+
 - **React** o **Next.js**
 - Integración con la API REST
 
 ## Características y Funcionalidades
 
 ### API Backend
+
 La API debe proporcionar las siguientes funcionalidades:
 
 - ✅ **Gestión de Propiedades**: CRUD completo para propiedades inmobiliarias
@@ -62,63 +65,70 @@ real-estate-api/
 
 ### Prerequisitos
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) o superior
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) o superior
 - [MongoDB](https://www.mongodb.com/try/download/community) (local o en la nube)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) o [VS Code](https://code.visualstudio.com/)
 
 ### Configuración del Entorno
 
 1. **Clonar el repositorio**
+
    ```bash
    git clone https://github.com/jagoqui/real-estate-api.git
    cd real-estate-api
    ```
 
 2. **Restaurar dependencias**
+
    ```bash
    dotnet restore
    ```
 
 3. **Configurar MongoDB**
+
    - Instalar MongoDB localmente o configurar una instancia en MongoDB Atlas
-   - Actualizar la cadena de conexión en `appsettings.json`:
-   ```json
-   {
-     "ConnectionStrings": {
-       "MongoDB": "mongodb://localhost:27017/realestate"
-     }
-   }
+   - Configurar las credenciales de conexión utilizando **dotnet user-secrets**:
+
+   ```bash
+   # Inicializar user-secrets (solo la primera vez)
+   dotnet user-secrets init
+
+   # Configurar la cadena de conexión a MongoDB
+   dotnet user-secrets set "DatabaseSettings:ConnectionString" "mongodb+srv://<usuario>:<contraseña>@<tu-cluster>.mongodb.net/?retryWrites=true&w=majority&appName=RealEstateCluster"
+   dotnet user-secrets set "DatabaseSettings:DatabaseName" "<NombreDeTuBaseDeDatos>"
+
    ```
 
 4. **Ejecutar la aplicación**
    ```bash
-   dotnet run --project src/RealEstate.API
+   dotnet watch run
    ```
 
 ## Endpoints de la API
 
 ### Propiedades
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/properties` | Obtener todas las propiedades |
-| GET | `/api/properties/{id}` | Obtener una propiedad por ID |
-| POST | `/api/properties` | Crear nueva propiedad |
-| PUT | `/api/properties/{id}` | Actualizar propiedad existente |
-| DELETE | `/api/properties/{id}` | Eliminar propiedad |
+| Método | Endpoint               | Descripción                    |
+| ------ | ---------------------- | ------------------------------ |
+| GET    | `/api/properties`      | Obtener todas las propiedades  |
+| GET    | `/api/properties/{id}` | Obtener una propiedad por ID   |
+| POST   | `/api/properties`      | Crear nueva propiedad          |
+| PUT    | `/api/properties/{id}` | Actualizar propiedad existente |
+| DELETE | `/api/properties/{id}` | Eliminar propiedad             |
 
 ### Filtrado
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/properties/search?name={name}` | Filtrar por nombre |
-| GET | `/api/properties/search?address={address}` | Filtrar por dirección |
-| GET | `/api/properties/search?minPrice={min}&maxPrice={max}` | Filtrar por rango de precios |
-| GET | `/api/properties/search?name={name}&address={address}&minPrice={min}&maxPrice={max}` | Filtrado combinado |
+| Método | Endpoint                                                                             | Descripción                  |
+| ------ | ------------------------------------------------------------------------------------ | ---------------------------- |
+| GET    | `/api/properties/search?name={name}`                                                 | Filtrar por nombre           |
+| GET    | `/api/properties/search?address={address}`                                           | Filtrar por dirección        |
+| GET    | `/api/properties/search?minPrice={min}&maxPrice={max}`                               | Filtrar por rango de precios |
+| GET    | `/api/properties/search?name={name}&address={address}&minPrice={min}&maxPrice={max}` | Filtrado combinado           |
 
 ### Ejemplos de Uso
 
 #### Crear una nueva propiedad
+
 ```bash
 curl -X POST http://localhost:5000/api/properties \
   -H "Content-Type: application/json" \
