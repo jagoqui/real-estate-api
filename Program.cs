@@ -10,7 +10,7 @@ using RealEstate.Infrastructure.API.Conventions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string envPath = builder.Environment.IsDevelopment() ? "environments/.env" : string.Empty;
+string envPath = builder.Environment.IsDevelopment() ? "environments/.env" : Env.DEFAULT_ENVFILENAME;
 
 if (!string.IsNullOrEmpty(envPath) && File.Exists(envPath))
 {
