@@ -60,7 +60,10 @@ builder.Services.AddScoped<IOwnerService, OwnerService>(); // <- Added registrat
 // =======================
 // API Configuration
 // =======================
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Conventions.Add(new LowercaseControllerConvention());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
