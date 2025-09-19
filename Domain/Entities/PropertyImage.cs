@@ -14,7 +14,8 @@ namespace RealEstate.Domain.Entities
         [BsonElement("Enabled")]
         public bool Enabled { get; set; }
     }
-    public class PropertyImage: PropertyImageWithoutId
+
+    public class PropertyImage : PropertyImageWithoutId
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

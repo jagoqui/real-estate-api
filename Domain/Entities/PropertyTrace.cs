@@ -3,7 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace RealEstate.Domain.Entities
 {
-
     public class IPropertyTraceTax
     {
         [BsonElement("Tax")]
@@ -11,7 +10,7 @@ namespace RealEstate.Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdProperty { get; set; } = null!;
     }
-    
+
     public class PropertyTraceWithoutId : IPropertyTraceTax
     {
         [BsonElement("DateSale")]
@@ -23,7 +22,7 @@ namespace RealEstate.Domain.Entities
         [BsonElement("Value")]
         public decimal Value { get; set; }
     }
-    
+
     public class PropertyTrace : PropertyTraceWithoutId
     {
         [BsonId]

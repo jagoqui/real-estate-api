@@ -24,7 +24,8 @@ namespace RealEstate.Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdOwner { get; set; } = null!;
     }
-    public class Property: PropertyWithoutId
+
+    public class Property : PropertyWithoutId
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
