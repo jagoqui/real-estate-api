@@ -1,5 +1,5 @@
-using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
+using RealEstate.Domain.Entities;
 using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services

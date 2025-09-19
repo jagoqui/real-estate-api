@@ -1,6 +1,6 @@
 using MongoDB.Driver;
-using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
+using RealEstate.Domain.Entities;
 
 namespace RealEstate.Infrastructure.API.Repositories
 {
