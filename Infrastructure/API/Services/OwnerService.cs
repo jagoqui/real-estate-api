@@ -7,10 +7,12 @@ namespace RealEstate.Infrastructure.API.Services
     public class OwnerService : IOwnerService
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly IPropertyRepository _propertyRepository;
 
-        public OwnerService(IOwnerRepository ownerRepository)
+        public OwnerService(IOwnerRepository ownerRepository, IPropertyRepository propertyRepository)
         {
             _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
+            _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
         }
 
         public async Task<IEnumerable<Owner>> GetAllOwnersAsync()
@@ -72,14 +74,23 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
+                var properties = await _propertyRepository.GetPropertiesByOwnerIdAsync(id);
+                if (properties.Any())
+                {
+                    throw new BadRequestException($"Owner with ID {id} cannot be deleted because it has {properties.Count()} properties assigned.");
+                }
+
                 await _ownerRepository.DeleteOwnerAsync(id);
+            }
+            catch (BadRequestException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 throw new InternalServerErrorException($"Error deleting owner with ID {id}.", ex);
             }
         }
-
         private async Task<Owner> EnsureOwnerExistsAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
