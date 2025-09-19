@@ -14,7 +14,6 @@ namespace RealEstate.Application.Contracts
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null
-        );
+            decimal? maxPrice = null);
     }
 }
