@@ -3,7 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace RealEstate.Domain.Entities
 {
-
     public class OwnerWithoutId
     {
         [BsonElement("Name")]
@@ -18,12 +17,11 @@ namespace RealEstate.Domain.Entities
         [BsonElement("Birthday")]
         public DateTime Birthday { get; set; }
     }
-    public class Owner: OwnerWithoutId
+
+    public class Owner : OwnerWithoutId
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdOwner { get; set; } = null!;
     }
-
-    
 }
