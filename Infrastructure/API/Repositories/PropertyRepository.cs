@@ -23,9 +23,9 @@ namespace RealEstate.Infrastructure.API.Repositories
             return await _properties.Find(p => p.IdProperty == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Property?> GetPropertyByOwnerIdAsync(string ownerId)
+        public async Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId)
         {
-            return await _properties.Find(p => p.IdOwner == ownerId).FirstOrDefaultAsync();
+            return await _properties.Find(p => p.IdOwner == ownerId).ToListAsync();
         }
 
         public async Task<Property> AddPropertyAsync(Property property)

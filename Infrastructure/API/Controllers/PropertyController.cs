@@ -34,13 +34,11 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet("owner/{ownerId}")]
-        [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetPropertyByOwnerId(string ownerId)
+        [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPropertiesByOwnerId(string ownerId)
         {
-            var property = await _propertyService.GetPropertyByOwnerIdAsync(ownerId);
-            if (property == null) return NotFound();
-            return Ok(property);
+            var properties = await _propertyService.GetPropertiesByOwnerIdAsync(ownerId);
+            return Ok(properties);
         }
 
         [HttpPost]

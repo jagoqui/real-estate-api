@@ -6,7 +6,7 @@ namespace RealEstate.Application.Contracts
     {
         Task<IEnumerable<Property>> GetPropertiesAsync();
         Task<Property?> GetPropertyByIdAsync(string id);
-        Task<Property?> GetPropertyByOwnerIdAsync(string ownerId);
+        Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId);
         Task<Property> AddPropertyAsync(Property property);
         Task<Property?> UpdatePropertyAsync(string id, Property property);
         Task DeletePropertyAsync(string id);
