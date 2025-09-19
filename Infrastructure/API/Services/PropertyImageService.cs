@@ -127,5 +127,61 @@ namespace RealEstate.Infrastructure.API.Services
                 Enabled = propertyImage.Enabled
             };
         }
+
+        /// <summary>
+        /// Validates that the base64 string represents a valid image (JPG, PNG, GIF, WEBP)
+        /// and that the file size does not exceed the allowed limit.
+        /// </summary>
+        private void ValidateImage(string base64File, int maxSizeInMB = 5)
+        {
+            if (string.IsNullOrWhiteSpace(base64File))
+            throw new BadRequestException("File cannot be empty.");
+
+            try
+            {
+            var base64Data = base64File.Contains(",")
+                ? base64File.Split(',')[1]
+                : base64File;
+
+            var fileBytes = Convert.FromBase64String(base64Data);
+
+            // Validate file size
+            var sizeInMB = fileBytes.Length / (1024.0 * 1024.0);
+            if (sizeInMB > maxSizeInMB)
+                throw new BadRequestException($"File size exceeds the {maxSizeInMB} MB limit.");
+
+            // Validate file format
+            if (!IsImage(fileBytes))
+                throw new BadRequestException("File is not a valid image (JPG, PNG, GIF, WEBP).");
+            }
+            catch (FormatException)
+            {
+            throw new BadRequestException("File is not a valid Base64 string.");
+            }
+        }
+
+        private bool IsImage(byte[] fileBytes)
+        {
+            if (fileBytes.Length < 4) return false;
+
+            // PNG
+            if (fileBytes[0] == 0x89 && fileBytes[1] == 0x50 && fileBytes[2] == 0x4E && fileBytes[3] == 0x47)
+                return true;
+
+            // JPG
+            if (fileBytes[0] == 0xFF && fileBytes[1] == 0xD8)
+                return true;
+
+            // GIF
+            if (fileBytes[0] == 0x47 && fileBytes[1] == 0x49 && fileBytes[2] == 0x46)
+                return true;
+
+            // WEBP
+            if (Encoding.ASCII.GetString(fileBytes, 0, 4) == "RIFF" &&
+                Encoding.ASCII.GetString(fileBytes, 8, 4) == "WEBP")
+                return true;
+
+            return false;
+        }
     }
 }
