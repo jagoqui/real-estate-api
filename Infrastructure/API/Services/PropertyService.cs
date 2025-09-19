@@ -30,6 +30,25 @@ namespace RealEstate.Infrastructure.API.Services
             return await EnsurePropertyExistsAsync(id);
         }
 
+        public async Task<Property?> GetPropertyByOwnerIdAsync(string ownerId)
+        {
+            if (string.IsNullOrWhiteSpace(ownerId))
+                throw new BadRequestException("Owner ID cannot be empty.");
+
+            try
+            {
+                var property = await _propertyRepository.GetPropertyByOwnerIdAsync(ownerId);
+                if (property == null)
+                    throw new NotFoundException($"No property found for owner ID {ownerId}.");
+
+                return property;
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException($"Error retrieving property for owner ID {ownerId}.", ex);
+            }
+        }
+
         public async Task<Property> AddPropertyAsync(PropertyWithoutId property)
         {
             if (property == null)

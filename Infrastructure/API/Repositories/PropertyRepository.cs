@@ -23,6 +23,11 @@ namespace RealEstate.Infrastructure.API.Repositories
             return await _properties.Find(p => p.IdProperty == id).FirstOrDefaultAsync();
         }
 
+        public async Task<Property?> GetPropertyByOwnerIdAsync(string ownerId)
+        {
+            return await _properties.Find(p => p.IdOwner == ownerId).FirstOrDefaultAsync();
+        }
+
         public async Task<Property> AddPropertyAsync(Property property)
         {
             await _properties.InsertOneAsync(property);

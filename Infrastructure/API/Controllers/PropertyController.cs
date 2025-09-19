@@ -33,6 +33,16 @@ namespace RealEstate.Infrastructure.API.Controllers
             return Ok(property);
         }
 
+        [HttpGet("owner/{ownerId}")]
+        [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPropertyByOwnerId(string ownerId)
+        {
+            var property = await _propertyService.GetPropertyByOwnerIdAsync(ownerId);
+            if (property == null) return NotFound();
+            return Ok(property);
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(Property), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
