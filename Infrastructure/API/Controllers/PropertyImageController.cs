@@ -52,7 +52,6 @@ namespace RealEstate.Infrastructure.API.Controllers
             return CreatedAtAction(nameof(GetPropertyImageById), new { id = createdImage.IdPropertyImage }, createdImage);
         }
 
-
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
