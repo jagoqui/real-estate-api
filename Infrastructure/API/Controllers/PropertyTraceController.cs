@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
+using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
 
 namespace RealEstate.Infrastructure.API.Controllers
@@ -8,21 +8,38 @@ namespace RealEstate.Infrastructure.API.Controllers
     [Route("api/[controller]")]
     public class PropertyTraceController : ControllerBase
     {
-        private readonly IMongoCollection<PropertyTrace> _traces;
+        private readonly IPropertyTraceService _propertyTraceService;
 
-        public PropertyTraceController(IMongoDatabase database)
+        public PropertyTraceController(IPropertyTraceService propertyTraceService)
         {
-            _traces = database.GetCollection<PropertyTrace>("PropertyTraces");
+            _propertyTraceService = propertyTraceService;
         }
 
-        /// <summary>
-        /// Lista el historial de ventas de una propiedad.
-        /// </summary>
-        [HttpGet("{propertyId}")]
-        public async Task<IActionResult> GetTraces(string propertyId)
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<PropertyTrace>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllPropertyTraces()
         {
-            var traces = await _traces.Find(t => t.IdProperty == propertyId).ToListAsync();
+            var traces = await _propertyTraceService.GetAllPropertyTracesAsync();
             return Ok(traces);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PropertyTrace), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPropertyTraceById(string id)
+        {
+            var trace = await _propertyTraceService.GetPropertyTraceByIdAsync(id);
+            if (trace == null) return NotFound();
+            return Ok(trace);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(PropertyTrace), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreatePropertyTrace([FromBody] PropertyTraceWithoutId propertyTrace)
+        {
+            var createdTrace = await _propertyTraceService.AddPropertyTraceAsync(propertyTrace);
+            return CreatedAtAction(nameof(GetPropertyTraceById), new { id = createdTrace.IdPropertyTrace }, createdTrace);
         }
     }
 }
