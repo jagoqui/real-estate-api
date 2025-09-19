@@ -105,7 +105,7 @@ real-estate-api/
 - #### Levantar en local con Docker
 
   ```bash
-  docker run -it --rm --env-file .env -p 5247:8080 realestate-api
+  docker run -it --rm -p 5247:8080 -v "$(pwd)/environments/.env:/etc/secrets/.env"  realestate-api
   ```
 
 ## Endpoints de la API

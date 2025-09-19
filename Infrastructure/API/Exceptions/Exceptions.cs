@@ -1,4 +1,4 @@
-namespace RealEstate.Application.Exceptions
+namespace RealEstate.Infrastructure.API.Exceptions
 {
     /// <summary>
     /// Exception thrown when a requested resource is not found.

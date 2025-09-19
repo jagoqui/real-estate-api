@@ -1,4 +1,4 @@
-using RealEstate.Application.Exceptions;
+using RealEstate.Infrastructure.API.Exceptions;
 using System.Net;
 using System.Text.Json;
 

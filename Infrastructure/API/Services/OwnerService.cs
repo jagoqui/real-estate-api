@@ -1,6 +1,6 @@
 using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
-using RealEstate.Application.Exceptions;
+using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services
 {
