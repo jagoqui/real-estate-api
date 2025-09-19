@@ -1,9 +1,8 @@
-using RealEstate.Infrastructure.API.Exceptions;
-using System.Net;
-using System.Text.Json;
-
 namespace RealEstate.Infrastructure.API.Middlewares
 {
+    using System.Net;
+    using System.Text.Json;
+    using RealEstate.Infrastructure.API.Exceptions;
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;
@@ -20,10 +19,10 @@ namespace RealEstate.Infrastructure.API.Middlewares
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = ex switch
                 {
-                    BadRequestException => (int)HttpStatusCode.BadRequest,
-                    NotFoundException => (int)HttpStatusCode.NotFound,
-                    InternalServerErrorException => (int)HttpStatusCode.InternalServerError,
-                    _ => (int)HttpStatusCode.InternalServerError
+                    BadRequestException => (int) HttpStatusCode.BadRequest,
+                    NotFoundException => (int) HttpStatusCode.NotFound,
+                    InternalServerErrorException => (int) HttpStatusCode.InternalServerError,
+                    _ => (int) HttpStatusCode.InternalServerError
                 };
 
                 var response = new { error = ex.Message };
@@ -31,5 +30,4 @@ namespace RealEstate.Infrastructure.API.Middlewares
             }
         }
     }
-
 }

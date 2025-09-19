@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace RealEstate.Infrastructure.API.Conventions
 {
-
     /// <summary>
     /// An <see cref="IControllerModelConvention"/> implementation that enforces lowercase controller names
     /// in ASP.NET Core MVC routing.

@@ -24,7 +24,7 @@ namespace RealEstate.Infrastructure.API.Exceptions
     /// </summary>
     public class InternalServerErrorException : Exception
     {
-        public InternalServerErrorException(string message, Exception? inner = null) 
+        public InternalServerErrorException(string message, Exception? inner = null)
             : base(message, inner) { }
     }
 }
