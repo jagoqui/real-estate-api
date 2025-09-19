@@ -33,6 +33,16 @@ namespace RealEstate.Infrastructure.API.Controllers
             return Ok(image);
         }
 
+        [HttpGet("property/{propertyId}")]
+        [ProducesResponseType(typeof(IEnumerable<PropertyImage>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPropertyImagesByPropertyId(string propertyId)
+        {
+            var images = await _propertyImageService.GetPropertyImagesByPropertyIdAsync(propertyId);
+            if (images == null || !images.Any()) return NotFound();
+            return Ok(images);
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

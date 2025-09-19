@@ -23,6 +23,11 @@ namespace RealEstate.Infrastructure.API.Repositories
             return await _propertyImages.Find(pi => pi.IdPropertyImage == id).FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<PropertyImage>> GetPropertyImagesByPropertyIdAsync(string propertyId)
+        {
+            return await _propertyImages.Find(pi => pi.IdProperty == propertyId).ToListAsync();
+        }
+
         public async Task<PropertyImage> AddPropertyImageAsync(PropertyImage propertyImage)
         {
             await _propertyImages.InsertOneAsync(propertyImage);

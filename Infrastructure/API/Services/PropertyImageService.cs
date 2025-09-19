@@ -8,10 +8,12 @@ namespace RealEstate.Infrastructure.API.Services
     public class PropertyImageService : IPropertyImageService
     {
         private readonly IPropertyImageRepository _propertyImageRepository;
+        private readonly IPropertyRepository _propertyRepository;
 
-        public PropertyImageService(IPropertyImageRepository propertyImageRepository)
+        public PropertyImageService(IPropertyImageRepository propertyImageRepository, IPropertyRepository propertyRepository)
         {
             _propertyImageRepository = propertyImageRepository ?? throw new ArgumentNullException(nameof(propertyImageRepository));
+            _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
         }
 
         public async Task<IEnumerable<PropertyImage>> GetAllPropertyImagesAsync()
@@ -28,13 +30,34 @@ namespace RealEstate.Infrastructure.API.Services
 
         public async Task<PropertyImage?> GetPropertyImageByIdAsync(string id)
         {
+            try
+            {
             return await EnsurePropertyImageExistsAsync(id);
+            }
+            catch (Exception ex)
+            {
+            throw new InternalServerErrorException($"Error retrieving property image with ID {id}.", ex);
+            }
+        }
+
+        public async Task<IEnumerable<PropertyImage>> GetPropertyImagesByPropertyIdAsync(string propertyId)
+        {
+            try
+            {
+                return await _propertyImageRepository.GetPropertyImagesByPropertyIdAsync(propertyId);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error retrieving property images by property ID.", ex);
+            }
         }
 
         public async Task<PropertyImage> AddPropertyImageAsync(PropertyImageWithoutId propertyImage)
         {
             if (propertyImage == null)
                 throw new BadRequestException("Property image cannot be null.");
+
+            await EnsurePropertyExistsAsync(propertyImage.IdProperty);
 
             ValidateImage(propertyImage.File);
 
@@ -54,6 +77,8 @@ namespace RealEstate.Infrastructure.API.Services
                 throw new BadRequestException("Property image cannot be null.");
 
             PropertyImage existingPropertyImage = await EnsurePropertyImageExistsAsync(id);
+
+            await EnsurePropertyExistsAsync(propertyImage.IdProperty);
 
             ValidateImage(propertyImage.File);
 
@@ -118,6 +143,16 @@ namespace RealEstate.Infrastructure.API.Services
                 throw new NotFoundException($"No property image found with ID {id}.");
 
             return propertyImage;
+        }
+
+        private async Task EnsurePropertyExistsAsync(string propertyId) 
+        {
+            if (string.IsNullOrWhiteSpace(propertyId))
+                throw new BadRequestException("Property ID cannot be empty.");
+
+            var property = await _propertyRepository.GetPropertyByIdAsync(propertyId);
+            if (property == null)
+                throw new BadRequestException($"No property found with ID {propertyId}.");
         }
 
         private PropertyImage CreatePropertyImageWithId(PropertyImageWithoutId propertyImage, string? id = null)

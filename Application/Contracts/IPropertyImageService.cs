@@ -6,6 +6,7 @@ namespace RealEstate.Application.Contracts
     {
         Task<IEnumerable<PropertyImage>> GetAllPropertyImagesAsync();
         Task<PropertyImage?> GetPropertyImageByIdAsync(string id);
+        Task<IEnumerable<PropertyImage>> GetPropertyImagesByPropertyIdAsync(string propertyId);
         Task<PropertyImage> AddPropertyImageAsync(PropertyImageWithoutId propertyImage);
         Task<PropertyImage> UpdatePropertyImageAsync(string id, PropertyImageWithoutId propertyImage);
         Task<PropertyImage?> UpdatePropertyImageFileAsync(string idPropertyImage, string base64File);
