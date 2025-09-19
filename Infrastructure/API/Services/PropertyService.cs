@@ -110,6 +110,23 @@ namespace RealEstate.Infrastructure.API.Services
             return property;
         }
 
+        public async Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
+            string? name = null,
+            string? address = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null
+        )
+        {
+            try
+            {
+                return await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error retrieving properties with filters.", ex);
+            }
+        }
+
         private Property CreatePropertyWithId(PropertyWithoutId property, string? id = null)
         {
             return id != null ? new Property

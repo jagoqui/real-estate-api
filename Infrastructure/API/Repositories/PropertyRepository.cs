@@ -44,5 +44,38 @@ namespace RealEstate.Infrastructure.API.Repositories
         {
             await _properties.DeleteOneAsync(p => p.IdProperty == id);
         }
+
+        public async Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
+            string? name = null,
+            string? address = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null
+        )
+        {
+            var filterBuilder = Builders<Property>.Filter;
+            var filter = filterBuilder.Empty;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                filter &= filterBuilder.Regex(p => p.Name, new MongoDB.Bson.BsonRegularExpression(name, "i"));
+            }
+
+            if (!string.IsNullOrEmpty(address))
+            {
+                filter &= filterBuilder.Regex(p => p.Address, new MongoDB.Bson.BsonRegularExpression(address, "i"));
+            }
+
+            if (minPrice.HasValue)
+            {
+                filter &= filterBuilder.Gte(p => p.Price, minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                filter &= filterBuilder.Lte(p => p.Price, maxPrice.Value);
+            }
+
+            return await _properties.Find(filter).ToListAsync();
+        }
     }
 }

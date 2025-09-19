@@ -71,5 +71,17 @@ namespace RealEstate.Infrastructure.API.Controllers
             await _propertyService.DeletePropertyAsync(id);
             return NoContent();
         }
+
+        [HttpGet("filter")]
+        [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPropertiesByFilter(
+            [FromQuery] string? name = null,
+            [FromQuery] string? address = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null)
+        {
+            var properties = await _propertyService.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice);
+            return Ok(properties);
+        }
     }
 }
