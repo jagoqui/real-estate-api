@@ -53,6 +53,17 @@ namespace RealEstate.Infrastructure.API.Controllers
             return Ok(updatedImage);
         }
 
+        [HttpPatch("{idPropertyImage}/file")]
+        [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdatePropertyImageFile(string idPropertyImage, [FromBody] string base64File)
+        {
+            var updatedImage = await _propertyImageService.UpdatePropertyImageFileAsync(idPropertyImage, base64File);
+            if (updatedImage == null) return NotFound();
+            return Ok(updatedImage);
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
