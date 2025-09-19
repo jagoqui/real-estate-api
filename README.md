@@ -299,6 +299,7 @@ La aplicación está desplegada en [Render](https://render.com/) con las siguien
 - **URL de Producción**: [https://real-estate-api-i4og.onrender.com](https://real-estate-api-i4og.onrender.com)
 - **Swagger UI**: [https://real-estate-api-i4og.onrender.com/swagger/index.html](https://real-estate-api-i4og.onrender.com/swagger/index.html)
 - **Configuración**: Variables de entorno configuradas en Render Dashboard
+- **Documentación automática** [Deepwiki](https://deepwiki.com/jagoqui/real-estate-api)
 
 ### 🐳 **Docker**
 
