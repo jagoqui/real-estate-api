@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copiar solo el csproj y restaurar
+# Copy only the csproj file and restore dependencies
 COPY RealEstateApi.csproj ./
 RUN dotnet restore
 
-# Copiar todo el proyecto y publicar
+# Copy the entire project and publish
 COPY . ./
 RUN dotnet publish -c Release -o /app/out
 
