@@ -7,10 +7,14 @@ namespace RealEstate.Infrastructure.API.Services
     public class PropertyService : IPropertyService
     {
         private readonly IPropertyRepository _propertyRepository;
+        private readonly IPropertyImageRepository _propertyImageRepository;
+        private readonly IOwnerRepository _ownerRepository;
 
-        public PropertyService(IPropertyRepository propertyRepository)
+        public PropertyService(IPropertyRepository propertyRepository, IPropertyImageRepository propertyImageRepository, IOwnerRepository ownerRepository)
         {
             _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
+            _propertyImageRepository = propertyImageRepository ?? throw new ArgumentNullException(nameof(propertyImageRepository));
+            _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
         }
 
         public async Task<IEnumerable<Property>> GetAllPropertiesAsync()
@@ -46,6 +50,8 @@ namespace RealEstate.Infrastructure.API.Services
         {
             if (property == null)
                 throw new BadRequestException("Property cannot be null.");
+
+            await EnsureOwnerExistsAsync(property.IdOwner);
 
             try
             {
@@ -83,6 +89,12 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
+                var images = await _propertyImageRepository.GetPropertyImagesByPropertyIdAsync(id);
+                foreach (var image in images)
+                {
+                    await _propertyImageRepository.DeletePropertyImageAsync(image.IdPropertyImage);
+                }
+
                 await _propertyRepository.DeletePropertyAsync(id);
             }
             catch (Exception ex)
