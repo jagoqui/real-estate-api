@@ -35,6 +35,16 @@ namespace RealEstate.Infrastructure.API.Repositories
             return propertyImage;
         }
 
+        public async Task<PropertyImage?> UpdatePropertyImageFileAsync(string idPropertyImage, string base64File)
+        {
+            var update = Builders<PropertyImage>.Update.Set(pi => pi.File, base64File);
+            var result = await _propertyImages.FindOneAndUpdateAsync(pi => pi.IdPropertyImage == idPropertyImage, update, new FindOneAndUpdateOptions<PropertyImage>
+            {
+                ReturnDocument = ReturnDocument.After
+            });
+            return result;
+        }
+
         public async Task DeletePropertyImageAsync(string id)
         {
             await _propertyImages.DeleteOneAsync(pi => pi.IdPropertyImage == id);
