@@ -3,13 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace RealEstate.Domain.Entities
 {
-    public class PropertyImage
+    public class PropertyImageWithoutId
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string IdPropertyImage { get; set; } = null!;
-
-        // FK: Property
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdProperty { get; set; } = null!;
 
@@ -18,5 +13,11 @@ namespace RealEstate.Domain.Entities
 
         [BsonElement("Enabled")]
         public bool Enabled { get; set; }
+    }
+    public class PropertyImage: PropertyImageWithoutId
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string IdPropertyImage { get; set; } = null!;
     }
 }
