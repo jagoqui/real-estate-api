@@ -5,8 +5,8 @@ API REST para gestión de propiedades inmobiliarias construida con .NET 9, Mongo
 ## 🌐 Demo en Vivo
 
 🚀 **API desplegada en Render**: [https://real-estate-api-i4og.onrender.com/api](https://real-estate-api-i4og.onrender.com/api)
-
 📡 **Documentación Swagger**: [https://real-estate-api-i4og.onrender.com/swagger/index.html](https://real-estate-api-i4og.onrender.com/swagger/index.html)
+🤖 **Documentación automática** [Deepwiki](https://deepwiki.com/jagoqui/real-estate-api)
 
 ## �📋 Tabla de Contenidos
 
@@ -92,7 +92,7 @@ El proyecto implementa una **Arquitectura Hexagonal** (Clean Architecture) organ
 
 ### 📁 Estructura de Capas
 
-```
+```bash
 ├── Domain/                     # 🎯 Capa de Dominio
 │   └── Entities/              # Entidades de negocio
 ├── Application/               # 📋 Capa de Aplicación  
@@ -299,7 +299,6 @@ La aplicación está desplegada en [Render](https://render.com/) con las siguien
 - **URL de Producción**: [https://real-estate-api-i4og.onrender.com](https://real-estate-api-i4og.onrender.com)
 - **Swagger UI**: [https://real-estate-api-i4og.onrender.com/swagger/index.html](https://real-estate-api-i4og.onrender.com/swagger/index.html)
 - **Configuración**: Variables de entorno configuradas en Render Dashboard
-- **Documentación automática** [Deepwiki](https://deepwiki.com/jagoqui/real-estate-api)
 
 ### 🐳 **Docker**
 
