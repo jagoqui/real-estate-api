@@ -7,10 +7,12 @@ namespace RealEstate.Infrastructure.API.Services
     public class PropertyTraceService : IPropertyTraceService
     {
         private readonly IPropertyTraceRepository _propertyTraceRepository;
+        private readonly IPropertyRepository _propertyRepository;
 
-        public PropertyTraceService(IPropertyTraceRepository propertyTraceRepository)
+        public PropertyTraceService(IPropertyTraceRepository propertyTraceRepository, IPropertyRepository propertyRepository)
         {
             _propertyTraceRepository = propertyTraceRepository ?? throw new ArgumentNullException(nameof(propertyTraceRepository));
+            _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
         }
 
         public async Task<IEnumerable<PropertyTrace>> GetAllPropertyTracesAsync()
@@ -30,14 +32,16 @@ namespace RealEstate.Infrastructure.API.Services
             return await EnsurePropertyTraceExistsAsync(id);
         }
 
-        public async Task<PropertyTrace> AddPropertyTraceAsync(PropertyTraceWithoutId propertyTrace)
+        public async Task<PropertyTrace> AddPropertyTraceAsync(IPropertyTraceTax propertyTrace)
         {
             if (propertyTrace == null)
                 throw new BadRequestException("PropertyTrace cannot be null.");
 
+            Property property = await EnsurePropertyExistsAsync(propertyTrace.IdProperty);
+
             try
             {
-                return await _propertyTraceRepository.AddPropertyTraceAsync(CreatePropertyTraceWithId(propertyTrace));
+                return await _propertyTraceRepository.AddPropertyTraceAsync(CreatePropertyTraceWithId(property,propertyTrace));
             }
             catch (Exception ex)
             {
@@ -57,16 +61,28 @@ namespace RealEstate.Infrastructure.API.Services
             return propertyTrace;
         }
 
-        private PropertyTrace CreatePropertyTraceWithId(PropertyTraceWithoutId propertyTrace)
+        private PropertyTrace CreatePropertyTraceWithId(Property property, IPropertyTraceTax propertyTrace)
         {
             return new PropertyTrace
             {
-                DateSale = propertyTrace.DateSale,
-                Name = propertyTrace.Name,
-                Value = propertyTrace.Value,
+                DateSale = DateTime.Now,
+                Name = property.Name,
+                Value = property.Price,
                 Tax = propertyTrace.Tax,
                 IdProperty = propertyTrace.IdProperty
             };
+        }
+
+        private async Task<Property> EnsurePropertyExistsAsync(string propertyId)
+        {
+            if (string.IsNullOrWhiteSpace(propertyId))
+                throw new BadRequestException("Property ID cannot be empty.");
+
+            var property = await _propertyRepository.GetPropertyByIdAsync(propertyId);
+            if (property == null)
+                throw new BadRequestException($"No property found with ID {propertyId}.");
+
+            return property;
         }
     }
 }

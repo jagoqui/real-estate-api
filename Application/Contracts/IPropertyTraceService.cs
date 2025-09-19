@@ -6,6 +6,6 @@ namespace RealEstate.Application.Contracts
     {
         Task<IEnumerable<PropertyTrace>> GetAllPropertyTracesAsync();
         Task<PropertyTrace?> GetPropertyTraceByIdAsync(string id);
-        Task<PropertyTrace> AddPropertyTraceAsync(PropertyTraceWithoutId propertyTrace);
+        Task<PropertyTrace> AddPropertyTraceAsync(IPropertyTraceTax propertyTrace);
     }
 }

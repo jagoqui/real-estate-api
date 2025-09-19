@@ -36,7 +36,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(PropertyTrace), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreatePropertyTrace([FromBody] PropertyTraceWithoutId propertyTrace)
+        public async Task<IActionResult> CreatePropertyTrace([FromBody] IPropertyTraceTax propertyTrace)
         {
             var createdTrace = await _propertyTraceService.AddPropertyTraceAsync(propertyTrace);
             return CreatedAtAction(nameof(GetPropertyTraceById), new { id = createdTrace.IdPropertyTrace }, createdTrace);

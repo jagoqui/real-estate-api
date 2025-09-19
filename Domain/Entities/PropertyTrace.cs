@@ -4,7 +4,15 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace RealEstate.Domain.Entities
 {
 
-    public class PropertyTraceWithoutId
+    public class IPropertyTraceTax
+    {
+        [BsonElement("Tax")]
+        public decimal Tax { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string IdProperty { get; set; } = null!;
+    }
+    
+    public class PropertyTraceWithoutId : IPropertyTraceTax
     {
         [BsonElement("DateSale")]
         public DateTime DateSale { get; set; }
@@ -14,13 +22,6 @@ namespace RealEstate.Domain.Entities
 
         [BsonElement("Value")]
         public decimal Value { get; set; }
-
-        [BsonElement("Tax")]
-        public decimal Tax { get; set; }
-
-        // FK: Property
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string IdProperty { get; set; } = null!;
     }
     
     public class PropertyTrace : PropertyTraceWithoutId
