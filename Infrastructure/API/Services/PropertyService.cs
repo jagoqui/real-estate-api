@@ -1,5 +1,5 @@
-using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
+using RealEstate.Domain.Entities;
 using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services
@@ -155,7 +155,7 @@ namespace RealEstate.Infrastructure.API.Services
                 IdOwner = property.IdOwner
             };
         }
-        
+
         private async Task EnsureOwnerExistsAsync(string ownerId)
         {
             if (string.IsNullOrWhiteSpace(ownerId))

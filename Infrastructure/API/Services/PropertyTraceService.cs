@@ -1,5 +1,5 @@
-using RealEstate.Domain.Entities;
 using RealEstate.Application.Contracts;
+using RealEstate.Domain.Entities;
 using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services
@@ -41,7 +41,7 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                return await _propertyTraceRepository.AddPropertyTraceAsync(CreatePropertyTraceWithId(property,propertyTrace));
+                return await _propertyTraceRepository.AddPropertyTraceAsync(CreatePropertyTraceWithId(property, propertyTrace));
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace RealEstate.Infrastructure.API.Services
                 Name = property.Name,
                 Value = property.Price,
                 Tax = propertyTrace.Tax,
-                IdProperty = propertyTrace.IdProperty
+                IdProperty = propertyTrace.IdProperty,
             };
         }
 
