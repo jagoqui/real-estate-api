@@ -35,6 +35,8 @@ namespace RealEstate.Infrastructure.API.Services
             if (propertyImage == null)
                 throw new BadRequestException("Property image cannot be null.");
 
+            ValidateImage(propertyImage.File);
+
             try
             {
                 return await _propertyImageRepository.AddPropertyImageAsync(CreatePropertyImageWithId(propertyImage));
@@ -52,9 +54,14 @@ namespace RealEstate.Infrastructure.API.Services
 
             PropertyImage existingPropertyImage = await EnsurePropertyImageExistsAsync(id);
 
+            ValidateImage(propertyImage.File);
+
             try
             {
-                await _propertyImageRepository.UpdatePropertyImageAsync(existingPropertyImage.IdPropertyImage, CreatePropertyImageWithId(propertyImage, existingPropertyImage.IdPropertyImage));
+                await _propertyImageRepository.UpdatePropertyImageAsync(
+                    existingPropertyImage.IdPropertyImage,
+                    CreatePropertyImageWithId(propertyImage, existingPropertyImage.IdPropertyImage)
+                );
 
                 return await _propertyImageRepository.GetPropertyImageByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated property image.");
