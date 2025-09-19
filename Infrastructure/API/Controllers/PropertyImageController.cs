@@ -29,7 +29,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> GetPropertyImageById(string id)
         {
             var image = await _propertyImageService.GetPropertyImageByIdAsync(id);
-            if (image == null) return NotFound();
+            if (image == null)
+                return NotFound();
             return Ok(image);
         }
 
@@ -39,7 +40,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> GetPropertyImagesByPropertyId(string propertyId)
         {
             var images = await _propertyImageService.GetPropertyImagesByPropertyIdAsync(propertyId);
-            if (images == null || !images.Any()) return NotFound();
+            if (images == null || !images.Any())
+                return NotFound();
             return Ok(images);
         }
 
@@ -59,7 +61,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> UpdatePropertyImage(string id, [FromBody] PropertyImageWithoutId propertyImage)
         {
             var updatedImage = await _propertyImageService.UpdatePropertyImageAsync(id, propertyImage);
-            if (updatedImage == null) return NotFound();
+            if (updatedImage == null)
+                return NotFound();
             return Ok(updatedImage);
         }
 
@@ -70,7 +73,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> UpdatePropertyImageFile(string idPropertyImage, [FromBody] string base64File)
         {
             var updatedImage = await _propertyImageService.UpdatePropertyImageFileAsync(idPropertyImage, base64File);
-            if (updatedImage == null) return NotFound();
+            if (updatedImage == null)
+                return NotFound();
             return Ok(updatedImage);
         }
 

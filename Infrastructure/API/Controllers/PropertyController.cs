@@ -29,7 +29,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> GetPropertyById(string id)
         {
             var property = await _propertyService.GetPropertyByIdAsync(id);
-            if (property == null) return NotFound();
+            if (property == null)
+                return NotFound();
             return Ok(property);
         }
 
@@ -57,7 +58,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> UpdateProperty(string id, [FromBody] PropertyWithoutId property)
         {
             var updatedProperty = await _propertyService.UpdatePropertyAsync(id, property);
-            if (updatedProperty == null) return NotFound();
+            if (updatedProperty == null)
+                return NotFound();
             return Ok(updatedProperty);
         }
 

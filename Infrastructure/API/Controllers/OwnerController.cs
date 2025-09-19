@@ -29,8 +29,9 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> GetOwnerById(string id)
         {
             var owner = await _ownerService.GetOwnerByIdAsync(id);
-            if (owner == null) return NotFound();
-            return Ok(owner); 
+            if (owner == null)
+                return NotFound();
+            return Ok(owner);
         }
 
         [HttpPost]
@@ -49,7 +50,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> UpdateOwner(string id, [FromBody] OwnerWithoutId owner)
         {
             var updatedOwner = await _ownerService.UpdateOwnerAsync(id, owner);
-            if (updatedOwner == null) return NotFound();
+            if (updatedOwner == null)
+                return NotFound();
             return Ok(updatedOwner);
         }
 

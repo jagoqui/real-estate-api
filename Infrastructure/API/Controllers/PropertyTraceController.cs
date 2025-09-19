@@ -29,7 +29,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         public async Task<IActionResult> GetPropertyTraceById(string id)
         {
             var trace = await _propertyTraceService.GetPropertyTraceByIdAsync(id);
-            if (trace == null) return NotFound();
+            if (trace == null)
+                return NotFound();
             return Ok(trace);
         }
 
