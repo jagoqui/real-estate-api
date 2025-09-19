@@ -3,12 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace RealEstate.Domain.Entities
 {
-    public class Property
+    public class PropertyWithoutId
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string IdProperty { get; set; } = null!;
-
         [BsonElement("Name")]
         public string Name { get; set; } = null!;
 
@@ -27,5 +23,11 @@ namespace RealEstate.Domain.Entities
         // FK: Owner
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdOwner { get; set; } = null!;
+    }
+    public class Property: PropertyWithoutId
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string IdProperty { get; set; } = null!;
     }
 }
