@@ -1,6 +1,5 @@
 using RealEstate.Domain.Entities;
 
-
 namespace RealEstate.Application.Contracts
 {
     public interface IOwnerRepository
