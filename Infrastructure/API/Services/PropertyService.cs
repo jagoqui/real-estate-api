@@ -70,6 +70,8 @@ namespace RealEstate.Infrastructure.API.Services
 
             Property existingProperty = await EnsurePropertyExistsAsync(id);
 
+            await EnsureOwnerExistsAsync(property.IdOwner);
+
             try
             {
                 await _propertyRepository.UpdatePropertyAsync(existingProperty.IdProperty, CreatePropertyWithId(property, existingProperty.IdProperty));
@@ -152,6 +154,16 @@ namespace RealEstate.Infrastructure.API.Services
                 Year = property.Year,
                 IdOwner = property.IdOwner
             };
+        }
+        
+        private async Task EnsureOwnerExistsAsync(string ownerId)
+        {
+            if (string.IsNullOrWhiteSpace(ownerId))
+                throw new BadRequestException("Owner ID cannot be empty.");
+
+            var owner = await _ownerRepository.GetOwnerByIdAsync(ownerId);
+            if (owner == null)
+                throw new BadRequestException($"No owner found with ID {ownerId}.");
         }
     }
 }
