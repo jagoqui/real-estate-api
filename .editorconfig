@@ -1,0 +1,35 @@
+root = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.severity = warning
+dotnet_diagnostic.SA1000.severity = warning
+dotnet_diagnostic.SA1200.severity = warning
+dotnet_diagnostic.SA1300.severity = warning
+dotnet_diagnostic.SA1400.severity = warning
+dotnet_diagnostic.SA1500.severity = warning
+dotnet_diagnostic.SA1600.severity = warning
+
+dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_preserve_single_line_statements = false
+csharp_space_after_cast = true
+csharp_space_before_colon_in_inheritance_clause = true
+
+
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1516.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1649.severity = none
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1503.severity = none
+dotnet_diagnostic.SA1128.severity = none
+dotnet_diagnostic.SA1502.severity = none
+dotnet_diagnostic.SA1003.severity = none
+dotnet_diagnostic.SA1009.severity = none
