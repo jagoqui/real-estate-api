@@ -3,12 +3,9 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace RealEstate.Domain.Entities
 {
-    public class PropertyTrace
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string IdPropertyTrace { get; set; } = null!;
 
+    public class PropertyTraceWithoutId
+    {
         [BsonElement("DateSale")]
         public DateTime DateSale { get; set; }
 
@@ -24,5 +21,12 @@ namespace RealEstate.Domain.Entities
         // FK: Property
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdProperty { get; set; } = null!;
+    }
+    
+    public class PropertyTrace : PropertyTraceWithoutId
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string IdPropertyTrace { get; set; } = null!;
     }
 }
