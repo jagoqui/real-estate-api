@@ -32,11 +32,11 @@ namespace RealEstate.Infrastructure.API.Services
         {
             try
             {
-            return await EnsurePropertyImageExistsAsync(id);
+                return await EnsurePropertyImageExistsAsync(id);
             }
             catch (Exception ex)
             {
-            throw new InternalServerErrorException($"Error retrieving property image with ID {id}.", ex);
+                throw new InternalServerErrorException($"Error retrieving property image with ID {id}.", ex);
             }
         }
 
@@ -117,7 +117,7 @@ namespace RealEstate.Infrastructure.API.Services
                 throw new InternalServerErrorException($"Error updating property image file with ID {idPropertyImage}.", ex);
             }
         }
-        
+
 
         public async Task DeletePropertyImageAsync(string id)
         {
@@ -145,7 +145,7 @@ namespace RealEstate.Infrastructure.API.Services
             return propertyImage;
         }
 
-        private async Task EnsurePropertyExistsAsync(string propertyId) 
+        private async Task EnsurePropertyExistsAsync(string propertyId)
         {
             if (string.IsNullOrWhiteSpace(propertyId))
                 throw new BadRequestException("Property ID cannot be empty.");
@@ -178,34 +178,35 @@ namespace RealEstate.Infrastructure.API.Services
         private void ValidateImage(string base64File, int maxSizeInMB = 5)
         {
             if (string.IsNullOrWhiteSpace(base64File))
-            throw new BadRequestException("File cannot be empty.");
+                throw new BadRequestException("File cannot be empty.");
 
             try
             {
-            var base64Data = base64File.Contains(",")
-                ? base64File.Split(',')[1]
-                : base64File;
+                var base64Data = base64File.Contains(",")
+                    ? base64File.Split(',')[1]
+                    : base64File;
 
-            var fileBytes = Convert.FromBase64String(base64Data);
+                var fileBytes = Convert.FromBase64String(base64Data);
 
-            // Validate file size
-            var sizeInMB = fileBytes.Length / (1024.0 * 1024.0);
-            if (sizeInMB > maxSizeInMB)
-                throw new BadRequestException($"File size exceeds the {maxSizeInMB} MB limit.");
+                // Validate file size
+                var sizeInMB = fileBytes.Length / (1024.0 * 1024.0);
+                if (sizeInMB > maxSizeInMB)
+                    throw new BadRequestException($"File size exceeds the {maxSizeInMB} MB limit.");
 
-            // Validate file format
-            if (!IsImage(fileBytes))
-                throw new BadRequestException("File is not a valid image (JPG, PNG, GIF, WEBP).");
+                // Validate file format
+                if (!IsImage(fileBytes))
+                    throw new BadRequestException("File is not a valid image (JPG, PNG, GIF, WEBP).");
             }
             catch (FormatException)
             {
-            throw new BadRequestException("File is not a valid Base64 string.");
+                throw new BadRequestException("File is not a valid Base64 string.");
             }
         }
 
         private bool IsImage(byte[] fileBytes)
         {
-            if (fileBytes.Length < 4) return false;
+            if (fileBytes.Length < 4)
+                return false;
 
             // PNG
             if (fileBytes[0] == 0x89 && fileBytes[1] == 0x50 && fileBytes[2] == 0x4E && fileBytes[3] == 0x47)
