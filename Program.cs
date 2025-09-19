@@ -1,12 +1,12 @@
 using DotNetEnv;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using RealEstate.Infrastructure.Config;
 using RealEstate.Application.Contracts;
-using RealEstate.Infrastructure.API.Services;
-using RealEstate.Infrastructure.API.Repositories;
-using RealEstate.Infrastructure.API.Middlewares;
 using RealEstate.Infrastructure.API.Conventions;
+using RealEstate.Infrastructure.API.Middlewares;
+using RealEstate.Infrastructure.API.Repositories;
+using RealEstate.Infrastructure.API.Services;
+using RealEstate.Infrastructure.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +26,7 @@ else
 // MongoDB Configuration
 // =======================
 string GetEnvOrThrow(string name) =>
-    Environment.GetEnvironmentVariable(name) 
+    Environment.GetEnvironmentVariable(name)
         ?? throw new InvalidOperationException($"{name} environment variable is not set or is empty.");
 
 builder.Services.Configure<DatabaseSettings>(options =>
@@ -88,6 +88,5 @@ app.UseAuthorization();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
-
 
 app.Run();
