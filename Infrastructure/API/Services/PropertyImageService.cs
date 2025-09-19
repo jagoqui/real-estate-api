@@ -65,6 +65,27 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
+        public async Task<PropertyImage?> UpdatePropertyImageFileAsync(string idPropertyImage, string base64File)
+        {
+            await EnsurePropertyImageExistsAsync(idPropertyImage);
+
+            ValidateImage(base64File);
+
+            try
+            {
+                var updatedImage = await _propertyImageRepository.UpdatePropertyImageFileAsync(idPropertyImage, base64File);
+                if (updatedImage == null)
+                    throw new InternalServerErrorException("Failed to update the property image file.");
+
+                return updatedImage;
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException($"Error updating property image file with ID {idPropertyImage}.", ex);
+            }
+        }
+        
+
         public async Task DeletePropertyImageAsync(string id)
         {
             await EnsurePropertyImageExistsAsync(id);
