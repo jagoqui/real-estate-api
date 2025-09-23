@@ -78,13 +78,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowAll",
+        "AllowedOrigins",
         policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
+        {
+            policy.WithOrigins(
+                "https://v0-real-estate-website-eight-vert.vercel.app")
+
+            // Permitir cualquier puerto en localhost
+            .SetIsOriginAllowed(origin =>
+            {
+                if (origin.StartsWith("http://localhost:") || origin.StartsWith("https://localhost:"))
+                {
+                    return true;
+                }
+
+                return false;
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
 });
 
 var app = builder.Build();
@@ -96,6 +108,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseCors("AllowedOrigins");
 app.UseAuthorization();
 
 // Global error handling middleware
