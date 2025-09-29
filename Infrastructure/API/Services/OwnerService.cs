@@ -39,7 +39,7 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                return await _ownerRepository.AddOwnerAsync(createOwnerWithId(owner));
+                return await _ownerRepository.AddOwnerAsync(CreateOwnerWithId(owner));
             }
             catch (Exception ex)
             {
@@ -56,8 +56,7 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-
-                await _ownerRepository.UpdateOwnerAsync(existingOwner.IdOwner, createOwnerWithId(owner, existingOwner.IdOwner));
+                await _ownerRepository.UpdateOwnerAsync(existingOwner.IdOwner, CreateOwnerWithId(owner, existingOwner.IdOwner));
 
                 return await _ownerRepository.GetOwnerByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated owner.");
@@ -91,6 +90,7 @@ namespace RealEstate.Infrastructure.API.Services
                 throw new InternalServerErrorException($"Error deleting owner with ID {id}.", ex);
             }
         }
+
         private async Task<Owner> EnsureOwnerExistsAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -103,7 +103,7 @@ namespace RealEstate.Infrastructure.API.Services
             return owner;
         }
 
-        private Owner createOwnerWithId(OwnerWithoutId owner, string? id = null)
+        private Owner CreateOwnerWithId(OwnerWithoutId owner, string? id = null)
         {
             return id != null ? new Owner
             {
@@ -111,13 +111,14 @@ namespace RealEstate.Infrastructure.API.Services
                 Name = owner.Name,
                 Address = owner.Address,
                 Photo = owner.Photo,
-                Birthday = owner.Birthday
-            } : new Owner
+                Birthday = owner.Birthday,
+            }
+            : new Owner
             {
                 Name = owner.Name,
                 Address = owner.Address,
                 Photo = owner.Photo,
-                Birthday = owner.Birthday
+                Birthday = owner.Birthday,
             };
         }
     }
