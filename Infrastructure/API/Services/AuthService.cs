@@ -3,6 +3,7 @@ using System.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BCrypt.Net;
+using Google.Apis.Auth;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
