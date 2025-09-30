@@ -15,8 +15,8 @@ namespace RealEstate.Domain.Entities
         [BsonElement("name")]
         public string? Name { get; set; }
 
-        [BsonElement("googleId")]
-        public string? GoogleId { get; set; }
+        [BsonElement("photoUrl")]
+        public string PhotoUrl { get; set; } = null!;
 
         [BsonElement("passwordHash")]
         public string? PasswordHash { get; set; }

@@ -156,6 +156,7 @@ namespace RealEstate.Infrastructure.Services
             Id = user.Id!,
             Email = user.Email,
             Name = user.Name,
+            PhotoUrl = user.PhotoUrl,
             Role = user.Role,
         };
 
