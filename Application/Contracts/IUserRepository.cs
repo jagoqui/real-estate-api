@@ -8,6 +8,7 @@ namespace RealEstate.Application.Contracts
         Task<User?> GetByGoogleIdAsync(string googleId);
         Task<User?> GetByIdAsync(string id); // Obtener usuario por ID
         Task<User> CreateAsync(User user);
+        Task<bool> UpdateAsync(UserWithoutId user);
         Task<IEnumerable<User>> GetAllAsync();
 
         // =======================
