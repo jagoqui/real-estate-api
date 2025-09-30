@@ -56,19 +56,13 @@ namespace RealEstate.API.Controllers
         // Login with Google
         // =======================
         [HttpPost("google-login")]
-        public async Task<ActionResult> GoogleLogin([FromBody] GoogleLoginRequestDto request)
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthCodeDto dto)
         {
-            var (accessToken, refreshToken, user) = await _authService.LoginWithGoogleAsync(
-                request.Email,
-                request.GoogleId,
-                request.Name);
+            if (string.IsNullOrEmpty(dto.Code))
+                return BadRequest("Authorization code is required.");
 
-            return Ok(new
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                User = user,
-            });
+            var result = await _authService.LoginWithGoogleCodeAsync(dto.Code);
+            return Ok(result);
         }
 
         // =======================

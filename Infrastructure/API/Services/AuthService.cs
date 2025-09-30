@@ -63,27 +63,66 @@ namespace RealEstate.Infrastructure.Services
             return (accessToken, refreshToken, ToDto(user));
         }
 
-        public async Task<(string accessToken, string refreshToken, UserDto user)> LoginWithGoogleAsync(string email, string googleId, string? name)
+        public async Task<AuthResponseDto> LoginWithGoogleCodeAsync(string code)
         {
-            var user = await _userRepository.GetByGoogleIdAsync(googleId);
+            var googleClientId = Environment.GetEnvironmentVariable("Authentication__GoogleClientId")
+                     ?? throw new InvalidOperationException("GOOGLE_CLIENT_ID is not set.");
+            var googleClientSecret = Environment.GetEnvironmentVariable("Authentication__GoogleClientSecret")
+                                     ?? throw new InvalidOperationException("GOOGLE_CLIENT_SECRET is not set.");
+            var redirectUri = Environment.GetEnvironmentVariable("Authentication__GoogleRedirectUri") ?? "http://localhost";
+
+            using var httpClient = new HttpClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
+            {
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            { "code", code },
+            { "client_id", googleClientId },
+            { "client_secret", googleClientSecret },
+            { "redirect_uri", redirectUri },
+            { "grant_type", "authorization_code" },
+        }),
+            };
+
+            var response = await httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+                throw new UnauthorizedAccessException("Failed to exchange Google authorization code.");
+
+            var payload = await response.Content.ReadFromJsonAsync<GoogleTokenResponse>();
+            if (payload == null || string.IsNullOrEmpty(payload.IdToken))
+                throw new UnauthorizedAccessException("Invalid Google token response.");
+
+            // Verificar el id_token
+            var validPayload = await GoogleJsonWebSignature.ValidateAsync(payload.IdToken);
+            if (validPayload == null)
+                throw new UnauthorizedAccessException("Invalid Google ID token.");
+
+            var user = await _userRepository.GetByGoogleIdAsync(validPayload.Subject);
             if (user == null)
             {
                 user = new User
                 {
-                    Email = email,
-                    GoogleId = googleId,
-                    Name = name,
+                    Email = validPayload.Email,
+                    Name = validPayload.Name,
+                    GoogleId = validPayload.Subject,
                     Role = UserRole.OWNER,
                 };
+
                 await _userRepository.CreateAsync(user);
             }
 
-            var accessToken = _jwtHelper.GenerateAccessToken(user, 1);
+            var accessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
             var refreshToken = _jwtHelper.GenerateRefreshToken();
 
             await _userRepository.SaveRefreshTokenAsync(user.Id!, refreshToken);
 
-            return (accessToken, refreshToken, ToDto(user));
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                User = ToDto(user),
+            };
         }
 
         // =======================
