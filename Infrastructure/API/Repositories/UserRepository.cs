@@ -35,6 +35,23 @@ namespace RealEstate.Infrastructure.API.Repositories
             return user;
         }
 
+        public async Task<bool> UpdateAsync(UserWithoutId user)
+        {
+            var update = Builders<User>.Update
+                .Set(u => u.Email, user.Email)
+                .Set(u => u.Name, user.Name)
+                .Set(u => u.PhotoUrl, user.PhotoUrl);
+
+            var userId = GetByGoogleIdAsync(user.GoogleId).Result?.Id;
+            if (userId == null)
+            {
+                return false;
+            }
+
+            var result = await _users.UpdateOneAsync(u => u.Id == userId, update);
+            return result.ModifiedCount == 1;
+        }
+
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _users.Find(_ => true).ToListAsync();
