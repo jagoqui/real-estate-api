@@ -1,6 +1,8 @@
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
 using RealEstate.Infrastructure.API.Exceptions;
+using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Infrastructure.API.Services
 {
@@ -8,11 +10,13 @@ namespace RealEstate.Infrastructure.API.Services
     {
         private readonly IOwnerRepository _ownerRepository;
         private readonly IPropertyRepository _propertyRepository;
+        private readonly JwtHelper _jwtHelper;
 
-        public OwnerService(IOwnerRepository ownerRepository, IPropertyRepository propertyRepository)
+        public OwnerService(IOwnerRepository ownerRepository, IPropertyRepository propertyRepository, JwtHelper jwtHelper)
         {
             _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
             _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
+            _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
         }
 
         public async Task<IEnumerable<Owner>> GetAllOwnersAsync()
@@ -32,14 +36,33 @@ namespace RealEstate.Infrastructure.API.Services
             return await EnsureOwnerExistsAsync(id);
         }
 
-        public async Task<Owner> AddOwnerAsync(OwnerWithoutId owner)
+        public async Task<Owner?> GetOwnerByUserIdAsync(string userId)
+        {
+            EnsureUserIsAuthorized(userId);
+            return await _ownerRepository.GetOwnerByUserIdAsync(userId)
+                   ?? throw new NotFoundException($"No owner found with User ID {userId}.");
+        }
+
+        public async Task<Owner> AddOwnerAsync(OwnerWithoutIds owner)
         {
             if (owner == null)
                 throw new BadRequestException("Owner cannot be null.");
 
+            var userId = _jwtHelper.GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("Invalid or missing JWT.");
+
+            var newOwner = new OwnerWithoutIds
+            {
+                Name = owner.Name,
+                Address = owner.Address,
+                Photo = owner.Photo,
+                Birthday = owner.Birthday,
+            };
+
             try
             {
-                return await _ownerRepository.AddOwnerAsync(CreateOwnerWithId(owner));
+                return await _ownerRepository.AddOwnerAsync(CreateOwnerWithId(newOwner, userId));
             }
             catch (Exception ex)
             {
@@ -47,16 +70,19 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<Owner> UpdateOwnerAsync(string id, OwnerWithoutId owner)
+        public async Task<Owner> UpdateOwnerAsync(string id, OwnerWithoutIds owner)
         {
             if (owner == null)
                 throw new BadRequestException("Owner cannot be null.");
 
-            Owner existingOwner = await EnsureOwnerExistsAsync(id);
+            var existingOwner = await EnsureOwnerExistsAsync(id);
+            EnsureUserCanModifyOwner(existingOwner);
 
             try
             {
-                await _ownerRepository.UpdateOwnerAsync(existingOwner.IdOwner, CreateOwnerWithId(owner, existingOwner.IdOwner));
+                await _ownerRepository.UpdateOwnerAsync(
+                    existingOwner.IdOwner,
+                    CreateOwnerWithId(owner, existingOwner.UserId, existingOwner.IdOwner));
 
                 return await _ownerRepository.GetOwnerByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated owner.");
@@ -69,7 +95,8 @@ namespace RealEstate.Infrastructure.API.Services
 
         public async Task DeleteOwnerAsync(string id)
         {
-            await EnsureOwnerExistsAsync(id);
+            var existingOwner = await EnsureOwnerExistsAsync(id);
+            EnsureUserCanModifyOwner(existingOwner);
 
             try
             {
@@ -103,23 +130,44 @@ namespace RealEstate.Infrastructure.API.Services
             return owner;
         }
 
-        private Owner CreateOwnerWithId(OwnerWithoutId owner, string? id = null)
+        private void EnsureUserIsAuthorized(string userId)
         {
-            return id != null ? new Owner
-            {
-                IdOwner = id,
-                Name = owner.Name,
-                Address = owner.Address,
-                Photo = owner.Photo,
-                Birthday = owner.Birthday,
-            }
-            : new Owner
-            {
-                Name = owner.Name,
-                Address = owner.Address,
-                Photo = owner.Photo,
-                Birthday = owner.Birthday,
-            };
+            var tokenUserId = _jwtHelper.GetUserIdFromToken();
+            var role = _jwtHelper.GetUserRoleFromToken();
+
+            if (role != UserRole.ADMIN.ToString() && tokenUserId != userId)
+                throw new UnauthorizedAccessException("You are not authorized to access this resource.");
+        }
+
+        private void EnsureUserCanModifyOwner(Owner owner)
+        {
+            var tokenUserId = _jwtHelper.GetUserIdFromToken();
+            var role = _jwtHelper.GetUserRoleFromToken();
+
+            if (role != UserRole.ADMIN.ToString() && owner.UserId != tokenUserId)
+                throw new UnauthorizedAccessException("You are not authorized to modify this owner.");
+        }
+
+        private Owner CreateOwnerWithId(OwnerWithoutIds owner, string userId, string? id = null)
+        {
+            return id != null
+                ? new Owner
+                {
+                    IdOwner = id,
+                    UserId = userId,
+                    Name = owner.Name,
+                    Address = owner.Address,
+                    Photo = owner.Photo,
+                    Birthday = owner.Birthday,
+                }
+                : new Owner
+                {
+                    UserId = userId,
+                    Name = owner.Name,
+                    Address = owner.Address,
+                    Photo = owner.Photo,
+                    Birthday = owner.Birthday,
+                };
         }
     }
 }
