@@ -21,16 +21,16 @@ namespace RealEstate.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            var (accessToken, refreshToken, user) = await _authService.RegisterAsync(
+            var result = await _authService.RegisterAsync(
                 request.Email,
                 request.Name,
                 request.Password);
 
             return Ok(new
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                User = user,
+                result.AccessToken,
+                result.RefreshToken,
+                result.User,
             });
         }
 
@@ -40,15 +40,15 @@ namespace RealEstate.API.Controllers
         [HttpPost("email-login")]
         public async Task<ActionResult> EmailLogin([FromBody] LoginRequestDto request)
         {
-            var (accessToken, refreshToken, user) = await _authService.LoginWithEmailAsync(
+            var result = await _authService.LoginWithEmailAsync(
                 request.Email,
                 request.Password);
 
             return Ok(new
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                User = user,
+                result.AccessToken,
+                result.RefreshToken,
+                result.User,
             });
         }
 
@@ -71,12 +71,12 @@ namespace RealEstate.API.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
         {
-            var (accessToken, refreshToken) = await _authService.RefreshTokenAsync(request.RefreshToken);
+            var result = await _authService.RefreshTokenAsync(request.RefreshToken);
 
             return Ok(new
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                result.AccessToken,
+                result.RefreshToken,
             });
         }
     }
