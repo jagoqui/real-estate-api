@@ -91,16 +91,18 @@ namespace RealEstate.Infrastructure.Services
         // =======================
         public async Task<(string accessToken, string refreshToken)> RefreshTokenAsync(string refreshToken)
         {
-            // Buscar el usuario que tenga este refresh token válido
+            // Buscar usuario que tenga este refresh token
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
             if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
-                throw new SecurityException("Invalid or expired refresh token");
+            {
+                throw new UnauthorizedAccessException("Invalid or expired refresh token");
+            }
 
             // Generar nuevos tokens
             var newAccessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
             var newRefreshToken = _jwtHelper.GenerateRefreshToken();
 
-            // Guardar el nuevo refresh token
+            // Guardar el nuevo refresh token e invalidar el anterior
             await _userRepository.SaveRefreshTokenAsync(user.Id!, newRefreshToken);
 
             return (newAccessToken, newRefreshToken);
