@@ -60,6 +60,7 @@ namespace RealEstate.Infrastructure.API.Extensions
             var jwtSecret = Environment.GetEnvironmentVariable("Jwt__Secret")
                             ?? throw new InvalidOperationException("JWT secret missing");
 
+            services.AddHttpContextAccessor();
             services.AddSingleton<JwtHelper>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

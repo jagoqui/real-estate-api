@@ -10,11 +10,13 @@ namespace RealEstate.Infrastructure.Utils
     public class JwtHelper
     {
         private readonly string _secret;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public JwtHelper()
+        public JwtHelper(IHttpContextAccessor httpContextAccessor)
         {
             _secret = Environment.GetEnvironmentVariable("Jwt__Secret")
                       ?? throw new InvalidOperationException("JWT secret missing");
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // =======================
@@ -87,6 +89,47 @@ namespace RealEstate.Infrastructure.Utils
             {
                 return null;
             }
+        }
+
+        // =======================
+        // Extraer token desde Headers
+        // =======================
+        private string? GetTokenFromHeaders()
+        {
+            var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                return null;
+
+            return authHeader.Substring("Bearer ".Length).Trim();
+        }
+
+        // =======================
+        // Obtener Claim genérico
+        // =======================
+        private string? GetClaimFromToken(string claimType)
+        {
+            var token = GetTokenFromHeaders();
+            if (token == null)
+                return null;
+
+            var principal = GetPrincipalFromExpiredToken(token);
+            return principal?.FindFirst(claimType)?.Value;
+        }
+
+        // =======================
+        // Obtener UserId
+        // =======================
+        public string? GetUserIdFromToken()
+        {
+            return GetClaimFromToken(ClaimTypes.NameIdentifier);
+        }
+
+        // =======================
+        // Obtener Role
+        // =======================
+        public string? GetUserRoleFromToken()
+        {
+            return GetClaimFromToken(ClaimTypes.Role);
         }
     }
 }
