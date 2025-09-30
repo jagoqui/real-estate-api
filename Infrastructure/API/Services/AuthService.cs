@@ -94,12 +94,12 @@ namespace RealEstate.Infrastructure.Services
             if (payload == null || string.IsNullOrEmpty(payload.IdToken))
                 throw new UnauthorizedAccessException("Invalid Google token response.");
 
-            // Verificar el id_token
             var validPayload = await GoogleJsonWebSignature.ValidateAsync(payload.IdToken);
             if (validPayload == null)
                 throw new UnauthorizedAccessException("Invalid Google ID token.");
 
             var user = await _userRepository.GetByGoogleIdAsync(validPayload.Subject);
+
             if (user == null)
             {
                 user = new User
@@ -107,10 +107,19 @@ namespace RealEstate.Infrastructure.Services
                     Email = validPayload.Email,
                     Name = validPayload.Name,
                     GoogleId = validPayload.Subject,
+                    PhotoUrl = validPayload.Picture,
                     Role = UserRole.OWNER,
                 };
 
                 await _userRepository.CreateAsync(user);
+            }
+            else
+            {
+                user.Email = validPayload.Email;
+                user.Name = validPayload.Name;
+                user.PhotoUrl = validPayload.Picture;
+
+                await _userRepository.UpdateAsync(user);
             }
 
             var accessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
