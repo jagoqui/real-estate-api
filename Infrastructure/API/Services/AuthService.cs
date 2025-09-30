@@ -10,12 +10,14 @@ namespace RealEstate.Infrastructure.Services
 {
     public class AuthService : IAuthService
     {
+        private readonly IOwnerRepository _ownerRepository;
         private readonly IUserRepository _userRepository;
         private readonly JwtHelper _jwtHelper;
 
-        public AuthService(IUserRepository userRepository, JwtHelper jwtHelper)
+        public AuthService(IUserRepository userRepository, IOwnerRepository ownerRepository, JwtHelper jwtHelper)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
             _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
         }
 
@@ -38,6 +40,8 @@ namespace RealEstate.Infrastructure.Services
 
             await _userRepository.CreateAsync(user);
 
+            await SyncOwnerAsync(user);
+
             var accessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
             var refreshToken = _jwtHelper.GenerateRefreshToken();
 
@@ -56,6 +60,8 @@ namespace RealEstate.Infrastructure.Services
             var user = await _userRepository.GetByEmailAsync(email);
             if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 throw new UnauthorizedAccessException("Invalid email or password.");
+
+            await SyncOwnerAsync(user);
 
             var accessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
             var refreshToken = _jwtHelper.GenerateRefreshToken();
@@ -128,6 +134,8 @@ namespace RealEstate.Infrastructure.Services
                 await _userRepository.UpdateAsync(user);
             }
 
+            await SyncOwnerAsync(user);
+
             var accessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
             var refreshToken = _jwtHelper.GenerateRefreshToken();
 
@@ -195,6 +203,32 @@ namespace RealEstate.Infrastructure.Services
             var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$";
             if (!System.Text.RegularExpressions.Regex.IsMatch(password, pattern))
                 throw new ArgumentException("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+        }
+
+        private async Task SyncOwnerAsync(User user)
+        {
+            var existingOwner = await _ownerRepository.GetOwnerByUserIdAsync(user.Id!);
+
+            if (existingOwner == null)
+            {
+                var newOwner = new Owner
+                {
+                    UserId = user.Id!,
+                    Name = user.Name ?? string.Empty,
+                    Address = string.Empty,
+                    Photo = user.PhotoUrl ?? string.Empty,
+                    Birthday = DateTime.MinValue,
+                };
+
+                await _ownerRepository.AddOwnerAsync(newOwner);
+            }
+            else
+            {
+                existingOwner.Name = user.Name ?? existingOwner.Name;
+                existingOwner.Photo = user.PhotoUrl ?? existingOwner.Photo;
+
+                await _ownerRepository.UpdateOwnerAsync(existingOwner.IdOwner, existingOwner);
+            }
         }
     }
 }
