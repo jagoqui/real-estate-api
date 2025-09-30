@@ -21,6 +21,7 @@ csharp_space_before_colon_in_inheritance_clause = true
 
 
 dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1200.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1600.severity = none
 dotnet_diagnostic.SA1516.severity = none
@@ -34,3 +35,4 @@ dotnet_diagnostic.SA1502.severity = none
 dotnet_diagnostic.SA1003.severity = none
 dotnet_diagnostic.SA1009.severity = none
 dotnet_diagnostic.SA1011.severity = none
+dotnet_diagnostic.SA1000.severity = none
