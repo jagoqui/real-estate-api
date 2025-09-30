@@ -15,5 +15,7 @@ namespace RealEstate.Application.Contracts
         // =======================
         Task SaveRefreshTokenAsync(string userId, string refreshToken, DateTime? expiryTime = null);
         Task<User?> GetByRefreshTokenAsync(string refreshToken);
+
+        Task<bool> ReplaceRefreshTokenAsync(string currentRefreshToken, string newRefreshToken, DateTime? expiryTime = null);
     }
 }
