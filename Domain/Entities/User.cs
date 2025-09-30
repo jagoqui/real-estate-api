@@ -4,11 +4,10 @@ using RealEstate.Domain.Enums;
 
 namespace RealEstate.Domain.Entities
 {
-    public class User
+    public class UserWithoutId
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        [BsonElement("googleId")]
+        public string GoogleId { get; set; } = null!;
 
         [BsonElement("email")]
         public string Email { get; set; } = null!;
@@ -30,5 +29,12 @@ namespace RealEstate.Domain.Entities
 
         [BsonElement("RefreshTokenExpiryTime")]
         public DateTime? RefreshTokenExpiryTime { get; set; }
+    }
+
+    public class User : UserWithoutId
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = null!;
     }
 }
