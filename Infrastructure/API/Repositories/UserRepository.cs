@@ -44,7 +44,7 @@ namespace RealEstate.Infrastructure.API.Repositories
         {
             var update = Builders<User>.Update
                 .Set(u => u.RefreshToken, refreshToken)
-                .Set(u => u.RefreshTokenExpiryTime, expiryTime ?? DateTime.UtcNow.AddDays(7)); // default 7 días
+                .Set(u => u.RefreshTokenExpiryTime, expiryTime ?? DateTime.UtcNow.AddDays(7));
 
             await _users.UpdateOneAsync(u => u.Id == userId, update);
         }
