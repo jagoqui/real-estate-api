@@ -37,8 +37,8 @@ namespace RealEstate.API.Controllers
         // =======================
         // Login
         // =======================
-        [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginRequestDto request)
+        [HttpPost("email-login")]
+        public async Task<ActionResult> EmailLogin([FromBody] LoginRequestDto request)
         {
             var (accessToken, refreshToken, user) = await _authService.LoginWithEmailAsync(
                 request.Email,
