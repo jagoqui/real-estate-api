@@ -1,13 +1,9 @@
-using System;
-using System.Security;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using BCrypt.Net;
 using Google.Apis.Auth;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
 using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Infrastructure.Services
