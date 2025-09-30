@@ -1,9 +1,9 @@
+using RealEstate.Infrastructure.DTOs;
+
 namespace RealEstate.Application.DTOs
 {
-    public class AuthResponseDto
+    public class AuthResponseDto : TokenDto
     {
-        public string AccessToken { get; set; } = null!;
-        public string RefreshToken { get; set; } = null!;
         public UserDto User { get; set; } = null!;
     }
 }
