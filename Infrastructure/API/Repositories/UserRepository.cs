@@ -53,5 +53,16 @@ namespace RealEstate.Infrastructure.API.Repositories
         {
             return await _users.Find(u => u.RefreshToken == refreshToken).FirstOrDefaultAsync();
         }
+
+        public async Task<bool> ReplaceRefreshTokenAsync(string currentRefreshToken, string newRefreshToken, DateTime? expiryTime = null)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.RefreshToken, currentRefreshToken);
+            var update = Builders<User>.Update
+                .Set(u => u.RefreshToken, newRefreshToken)
+                .Set(u => u.RefreshTokenExpiryTime, expiryTime ?? DateTime.UtcNow.AddDays(7));
+
+            var result = await _users.UpdateOneAsync(filter, update);
+            return result.ModifiedCount == 1;
+        }
     }
 }
