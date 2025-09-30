@@ -69,9 +69,9 @@ namespace RealEstate.API.Controllers
         // Refresh Token
         // =======================
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
-            var result = await _authService.RefreshTokenAsync(request.RefreshToken);
+            var result = await _authService.RefreshTokenAsync(refreshTokenDto.RefreshToken);
 
             return Ok(new
             {
