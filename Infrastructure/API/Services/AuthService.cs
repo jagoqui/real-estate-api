@@ -22,9 +22,6 @@ namespace RealEstate.Infrastructure.Services
             _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
         }
 
-        // =======================
-        // Register
-        // =======================
         public async Task<(string accessToken, string refreshToken, UserDto user)> RegisterAsync(string email, string name, string password)
         {
             ValidateEmail(email);
@@ -52,9 +49,6 @@ namespace RealEstate.Infrastructure.Services
             return (accessToken, refreshToken, ToDto(user));
         }
 
-        // =======================
-        // Login with Email
-        // =======================
         public async Task<(string accessToken, string refreshToken, UserDto user)> LoginWithEmailAsync(string email, string password)
         {
             var user = await _userRepository.GetByEmailAsync(email);
@@ -69,9 +63,6 @@ namespace RealEstate.Infrastructure.Services
             return (accessToken, refreshToken, ToDto(user));
         }
 
-        // =======================
-        // Login with Google
-        // =======================
         public async Task<(string accessToken, string refreshToken, UserDto user)> LoginWithGoogleAsync(string email, string googleId, string? name)
         {
             var user = await _userRepository.GetByGoogleIdAsync(googleId);
