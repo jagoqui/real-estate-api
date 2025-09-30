@@ -23,7 +23,7 @@ namespace RealEstate.Infrastructure.Services
             _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
         }
 
-        public async Task<(string accessToken, string refreshToken, UserDto user)> RegisterAsync(string email, string name, string password)
+        public async Task<AuthResponseDto> RegisterAsync(string email, string name, string password)
         {
             ValidateEmail(email);
             ValidatePassword(password);
@@ -47,10 +47,15 @@ namespace RealEstate.Infrastructure.Services
 
             await _userRepository.SaveRefreshTokenAsync(user.Id!, refreshToken);
 
-            return (accessToken, refreshToken, ToDto(user));
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                User = ToDto(user),
+            };
         }
 
-        public async Task<(string accessToken, string refreshToken, UserDto user)> LoginWithEmailAsync(string email, string password)
+        public async Task<AuthResponseDto> LoginWithEmailAsync(string email, string password)
         {
             var user = await _userRepository.GetByEmailAsync(email);
             if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
@@ -61,7 +66,12 @@ namespace RealEstate.Infrastructure.Services
 
             await _userRepository.SaveRefreshTokenAsync(user.Id!, refreshToken);
 
-            return (accessToken, refreshToken, ToDto(user));
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                User = ToDto(user),
+            };
         }
 
         public async Task<AuthResponseDto> LoginWithGoogleCodeAsync(string code)
@@ -138,7 +148,7 @@ namespace RealEstate.Infrastructure.Services
         // =======================
         // Refresh Token
         // =======================
-        public async Task<(string accessToken, string refreshToken)> RefreshTokenAsync(string refreshToken)
+        public async Task<TokenDto> RefreshTokenAsync(string refreshToken)
         {
             // Buscar usuario que tenga este refresh token
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
@@ -154,7 +164,11 @@ namespace RealEstate.Infrastructure.Services
             // Guardar el nuevo refresh token e invalidar el anterior
             await _userRepository.SaveRefreshTokenAsync(user.Id!, newRefreshToken);
 
-            return (newAccessToken, newRefreshToken);
+            return new TokenDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken,
+            };
         }
 
         // =======================
