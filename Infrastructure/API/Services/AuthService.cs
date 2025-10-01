@@ -105,7 +105,7 @@ namespace RealEstate.Infrastructure.Services
             { "code", code },
             { "client_id", googleClientId },
             { "client_secret", googleClientSecret },
-            { "redirect_uri", redirectUri },
+            { "redirect_uri", origin },
             { "grant_type", "authorization_code" },
         }),
             };
