@@ -20,6 +20,18 @@ namespace RealEstate.Domain.Entities
         [BsonElement("Year")]
         public int Year { get; set; }
 
+        [BsonElement("Description")]
+        public string Description { get; set; } = null!;
+
+        [BsonElement("Bathrooms")]
+        public int Bathrooms { get; set; }
+
+        [BsonElement("Bedrooms")]
+        public int Bedrooms { get; set; }
+
+        [BsonElement("AreaSqm")]
+        public int AreaSqm { get; set; }
+
         // FK: Owner
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdOwner { get; set; } = null!;
