@@ -7,7 +7,7 @@ namespace RealEstate.Application.Contracts
     {
         Task<AuthResponseDto> RegisterAsync(string email, string name, string password);
         Task<AuthResponseDto> LoginWithEmailAsync(string email, string password);
-        Task<TokenDto> RefreshTokenAsync(string refreshToken);
+        Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
         Task<AuthResponseDto> LoginWithGoogleCodeAsync(string code);
     }
 }
