@@ -164,7 +164,7 @@ namespace RealEstate.Infrastructure.Services
         // =======================
         // Refresh Token
         // =======================
-        public async Task<TokenDto> RefreshTokenAsync(string refreshToken)
+        public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
         {
             // Buscar usuario que tenga este refresh token
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
@@ -180,10 +180,11 @@ namespace RealEstate.Infrastructure.Services
             // Guardar el nuevo refresh token e invalidar el anterior
             await _userRepository.SaveRefreshTokenAsync(user.Id!, newRefreshToken);
 
-            return new TokenDto
+            return new AuthResponseDto
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken,
+                User = ToDto(user),
             };
         }
 
