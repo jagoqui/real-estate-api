@@ -13,12 +13,18 @@ namespace RealEstate.Infrastructure.Services
         private readonly IOwnerRepository _ownerRepository;
         private readonly IUserRepository _userRepository;
         private readonly JwtHelper _jwtHelper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(IUserRepository userRepository, IOwnerRepository ownerRepository, JwtHelper jwtHelper)
+        public AuthService(
+            IUserRepository userRepository,
+            IOwnerRepository ownerRepository,
+            JwtHelper jwtHelper,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
             _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         public async Task<AuthResponseDto> RegisterAsync(string email, string name, string password)
