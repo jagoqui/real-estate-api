@@ -73,11 +73,7 @@ namespace RealEstate.API.Controllers
         {
             var result = await _authService.RefreshTokenAsync(refreshTokenDto.RefreshToken);
 
-            return Ok(new
-            {
-                result.AccessToken,
-                result.RefreshToken,
-            });
+            return Ok(result);
         }
     }
 }
