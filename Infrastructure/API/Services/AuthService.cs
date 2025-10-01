@@ -88,7 +88,13 @@ namespace RealEstate.Infrastructure.Services
                      ?? throw new InvalidOperationException("GOOGLE_CLIENT_ID is not set.");
             var googleClientSecret = Environment.GetEnvironmentVariable("Authentication__GoogleClientSecret")
                                      ?? throw new InvalidOperationException("GOOGLE_CLIENT_SECRET is not set.");
-            var redirectUri = Environment.GetEnvironmentVariable("Authentication__GoogleRedirectUri") ?? "http://localhost";
+            var httpContext = _httpContextAccessor.HttpContext
+                             ?? throw new InvalidOperationException("No HttpContext available");
+
+            var origin = httpContext.Request.Headers["Origin"].FirstOrDefault();
+
+            if (string.IsNullOrEmpty(origin))
+                throw new InvalidOperationException("Origin header is missing.");
 
             using var httpClient = new HttpClient();
 
