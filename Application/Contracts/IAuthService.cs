@@ -1,5 +1,4 @@
 using RealEstate.Application.DTOs;
-using RealEstate.Infrastructure.DTOs;
 
 namespace RealEstate.Application.Contracts
 {
@@ -9,5 +8,6 @@ namespace RealEstate.Application.Contracts
         Task<AuthResponseDto> LoginWithEmailAsync(string email, string password);
         Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
         Task<AuthResponseDto> LoginWithGoogleCodeAsync(string code);
+        Task LogoutAsync();
     }
 }

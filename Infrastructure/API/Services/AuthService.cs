@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Google.Apis.Auth;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
-using RealEstate.Infrastructure.DTOs;
 using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Infrastructure.Services
@@ -186,6 +186,27 @@ namespace RealEstate.Infrastructure.Services
                 RefreshToken = newRefreshToken,
                 User = ToDto(user),
             };
+        }
+
+        public async Task LogoutAsync()
+        {
+            var httpContext = _httpContextAccessor.HttpContext
+                ?? throw new InvalidOperationException("No HttpContext available");
+
+            var user = httpContext.User;
+
+            if (user?.Identity == null || !user.Identity.IsAuthenticated)
+                throw new UnauthorizedAccessException("User is not authenticated.");
+
+            // Extraer el userId desde los claims del JWT
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                      ?? user.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("JWT does not contain a valid user identifier.");
+
+            // Invalidar el refresh token en base de datos
+            await _userRepository.SaveRefreshTokenAsync(userId, string.Empty);
         }
 
         // =======================

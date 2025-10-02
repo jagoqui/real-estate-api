@@ -47,9 +47,6 @@ var app = builder.Build();
 // =======================
 // Middleware
 // =======================
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseCors("AllowedOrigins");
 app.UseCustomMiddlewares();
 
 app.Run();

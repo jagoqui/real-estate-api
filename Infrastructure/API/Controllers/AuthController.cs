@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
@@ -74,6 +75,14 @@ namespace RealEstate.API.Controllers
             var result = await _authService.RefreshTokenAsync(refreshTokenDto.RefreshToken);
 
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _authService.LogoutAsync();
+            return Ok(new { message = "User logged out successfully." });
         }
     }
 }
