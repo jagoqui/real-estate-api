@@ -439,3 +439,5 @@ Para reportar bugs o solicitar features, usar el sistema de Issues de GitHub con
 ---
 
 ⭐ ¡No olvides dar una estrella al proyecto si te fue útil!
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jagoqui/real-estate-api)
