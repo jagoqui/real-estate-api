@@ -49,8 +49,7 @@ namespace RealEstate.Infrastructure.API.Repositories
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null
-        )
+            decimal? maxPrice = null)
         {
             var filterBuilder = Builders<Property>.Filter;
             var filter = filterBuilder.Empty;
