@@ -1,9 +1,11 @@
+using System.Net.Mime;
 using System.Security.Claims;
 using Google.Apis.Auth;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.API.Services;
 using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Infrastructure.Services
@@ -14,17 +16,23 @@ namespace RealEstate.Infrastructure.Services
         private readonly IUserRepository _userRepository;
         private readonly JwtHelper _jwtHelper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IImageUploadService _imageUploadService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public AuthService(
             IUserRepository userRepository,
             IOwnerRepository ownerRepository,
             JwtHelper jwtHelper,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IImageUploadService imageUploadService, // CORRECCIÓN: Usar la interfaz para la inyección de dependencias
+            IHttpClientFactory httpClientFactory)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
             _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _imageUploadService = imageUploadService ?? throw new ArgumentNullException(nameof(imageUploadService));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<AuthResponseDto> RegisterAsync(string email, string name, string password)
@@ -36,12 +44,14 @@ namespace RealEstate.Infrastructure.Services
             if (existingUser != null)
                 throw new InvalidOperationException("A user already exists with that email.");
 
+            UserRole role = email.Contains("@admin.com") ? UserRole.ADMIN : UserRole.OWNER;
+
             var user = new User
             {
                 Email = email,
                 Name = name,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                Role = UserRole.OWNER,
+                Role = role,
             };
 
             await _userRepository.CreateAsync(user);
@@ -85,32 +95,33 @@ namespace RealEstate.Infrastructure.Services
         public async Task<AuthResponseDto> LoginWithGoogleCodeAsync(string code)
         {
             var googleClientId = Environment.GetEnvironmentVariable("Authentication__GoogleClientId")
-                     ?? throw new InvalidOperationException("GOOGLE_CLIENT_ID is not set.");
+                             ?? throw new InvalidOperationException("GOOGLE_CLIENT_ID is not set.");
             var googleClientSecret = Environment.GetEnvironmentVariable("Authentication__GoogleClientSecret")
                                      ?? throw new InvalidOperationException("GOOGLE_CLIENT_SECRET is not set.");
             var httpContext = _httpContextAccessor.HttpContext
-                             ?? throw new InvalidOperationException("No HttpContext available");
+                              ?? throw new InvalidOperationException("No HttpContext available");
+
+            // Usamos un HttpClient diferente para el token
+            using var tokenHttpClient = _httpClientFactory.CreateClient();
 
             var origin = httpContext.Request.Headers["Origin"].FirstOrDefault();
 
             if (string.IsNullOrEmpty(origin))
                 throw new InvalidOperationException("Origin header is missing.");
 
-            using var httpClient = new HttpClient();
-
             var request = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
             {
                 Content = new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            { "code", code },
-            { "client_id", googleClientId },
-            { "client_secret", googleClientSecret },
-            { "redirect_uri", origin },
-            { "grant_type", "authorization_code" },
-        }),
+                {
+                    { "code", code },
+                    { "client_id", googleClientId },
+                    { "client_secret", googleClientSecret },
+                    { "redirect_uri", origin },
+                    { "grant_type", "authorization_code" },
+                }),
             };
 
-            var response = await httpClient.SendAsync(request);
+            var response = await tokenHttpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
                 throw new UnauthorizedAccessException("Failed to exchange Google authorization code.");
 
@@ -126,12 +137,61 @@ namespace RealEstate.Infrastructure.Services
 
             if (user == null)
             {
+                // ** Lógica para nuevo usuario: Descargar la foto y subirla a Cloudinary **
+                string? cloudinaryPhotoUrl = null;
+                string googlePhotoUrl = validPayload.Picture;
+
+                if (!string.IsNullOrEmpty(googlePhotoUrl))
+                {
+                    try
+                    {
+                        // 1. Descargar la imagen desde Google URL
+                        using var imageHttpClient = _httpClientFactory.CreateClient();
+                        var imageResponse = await imageHttpClient.GetAsync(googlePhotoUrl);
+
+                        if (imageResponse.IsSuccessStatusCode)
+                        {
+                            var imageStream = await imageResponse.Content.ReadAsStreamAsync();
+
+                            // El stream de red no garantiza que se pueda buscar ni que su Length sea accesible.
+                            // Lo copiamos a un MemoryStream para crear el IFormFile.
+                            using var memoryStream = new MemoryStream();
+                            await imageStream.CopyToAsync(memoryStream);
+                            memoryStream.Position = 0; // Reiniciar para lectura
+
+                            // Intentamos obtener el ContentType de la respuesta
+                            var contentType = imageResponse.Content.Headers.ContentType?.MediaType ?? MediaTypeNames.Image.Jpeg;
+
+                            // 2. Crear un IFormFile falso con el stream de la imagen
+                            // Usamos el subject de Google (ID único) como parte del nombre del archivo.
+                            var fileExtension = contentType.Split('/').Last();
+                            var fileName = $"google_{validPayload.Subject}.{fileExtension}";
+
+                            var formFile = new FormFile(memoryStream, 0, memoryStream.Length, "file", fileName)
+                            {
+                                Headers = new HeaderDictionary(),
+                                ContentType = contentType,
+                            };
+
+                            // 3. Subir a Cloudinary en la carpeta "user"
+                            cloudinaryPhotoUrl = await _imageUploadService.UploadImageAsync(formFile, "user");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Registramos el error y continuamos usando la URL de Google (temporal)
+                        Console.WriteLine($"[ERROR] Cloudinary upload for Google photo failed: {ex.Message}");
+                    }
+                }
+
                 user = new User
                 {
                     Email = validPayload.Email,
                     Name = validPayload.Name,
                     GoogleId = validPayload.Subject,
-                    PhotoUrl = validPayload.Picture,
+
+                    // Usamos la URL de Cloudinary si fue exitoso, si no, la de Google (temporal)
+                    PhotoUrl = cloudinaryPhotoUrl ?? validPayload.Picture,
                     Role = UserRole.OWNER,
                 };
 
