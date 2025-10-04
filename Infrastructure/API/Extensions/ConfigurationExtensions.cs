@@ -118,6 +118,7 @@ namespace RealEstate.Infrastructure.API.Extensions
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<IOwnerRepository, OwnerRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
 
             // Services
             services.AddScoped<IPropertyService, PropertyService>();
