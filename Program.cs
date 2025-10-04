@@ -15,6 +15,12 @@ builder.Services.AddMongoDb(builder.Configuration);
 builder.Services.AddJwtAuth(builder.Configuration);
 
 // =======================
+// Cloudinary & HTTP Client (NUEVAS ADICIONES)
+// =======================
+builder.Services.AddCloudinary();
+builder.Services.AddHttpClient();
+
+// =======================
 // Application Services & Repositories
 // =======================
 builder.Services.AddApplicationServices();
