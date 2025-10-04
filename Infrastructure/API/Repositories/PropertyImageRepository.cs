@@ -45,7 +45,7 @@ namespace RealEstate.Infrastructure.API.Repositories
             var update = Builders<PropertyImage>.Update.Set(pi => pi.File, base64File);
             var result = await _propertyImages.FindOneAndUpdateAsync(pi => pi.IdPropertyImage == idPropertyImage, update, new FindOneAndUpdateOptions<PropertyImage>
             {
-                ReturnDocument = ReturnDocument.After
+                ReturnDocument = ReturnDocument.After,
             });
             return result;
         }
