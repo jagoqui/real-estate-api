@@ -121,8 +121,7 @@ namespace RealEstate.Infrastructure.API.Services
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null
-        )
+            decimal? maxPrice = null)
         {
             try
             {
@@ -144,7 +143,7 @@ namespace RealEstate.Infrastructure.API.Services
                 Price = property.Price,
                 CodeInternal = property.CodeInternal,
                 Year = property.Year,
-                IdOwner = property.IdOwner
+                IdOwner = property.IdOwner,
             } : new Property
             {
                 Name = property.Name,
@@ -152,7 +151,7 @@ namespace RealEstate.Infrastructure.API.Services
                 Price = property.Price,
                 CodeInternal = property.CodeInternal,
                 Year = property.Year,
-                IdOwner = property.IdOwner
+                IdOwner = property.IdOwner,
             };
         }
 
