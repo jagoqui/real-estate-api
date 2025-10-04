@@ -141,7 +141,6 @@ namespace RealEstate.Infrastructure.Services
             {
                 user.Email = validPayload.Email;
                 user.Name = validPayload.Name;
-                user.PhotoUrl = validPayload.Picture;
 
                 await _userRepository.UpdateAsync(user);
             }
