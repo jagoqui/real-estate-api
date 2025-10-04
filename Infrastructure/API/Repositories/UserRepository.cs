@@ -57,6 +57,11 @@ namespace RealEstate.Infrastructure.API.Repositories
             return await _users.Find(_ => true).ToListAsync();
         }
 
+        public async Task DeleteAsync(string userId)
+        {
+            await _users.DeleteOneAsync(u => u.Id == userId);
+        }
+
         public async Task SaveRefreshTokenAsync(string userId, string refreshToken, DateTime? expiryTime = null)
         {
             var update = Builders<User>.Update
