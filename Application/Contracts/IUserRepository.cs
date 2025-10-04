@@ -10,6 +10,7 @@ namespace RealEstate.Application.Contracts
         Task<User> CreateAsync(User user);
         Task<bool> UpdateAsync(UserWithoutId user);
         Task<IEnumerable<User>> GetAllAsync();
+        Task DeleteAsync(string userId);
 
         // =======================
         // Refresh token
