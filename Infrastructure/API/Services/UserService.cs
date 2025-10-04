@@ -25,5 +25,35 @@ namespace RealEstate.Application.Services
                 Role = u.Role,
             });
         }
+
+        public async Task<UserDto> GetUserByIdAsync(string userId)
+        {
+            var user = await _repository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with ID {userId} not found.");
+            }
+
+            return new UserDto
+            {
+                Id = user.Id!,
+                Email = user.Email,
+                Name = user.Name,
+                GoogleId = user.GoogleId,
+                Role = user.Role,
+            };
+        }
+
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            var user = await _repository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return false; // User not found
+            }
+
+            await _repository.DeleteAsync(userId);
+            return true; // User deleted successfully
+        }
     }
 }
