@@ -86,8 +86,7 @@ namespace RealEstate.Infrastructure.API.Services
             {
                 await _propertyImageRepository.UpdatePropertyImageAsync(
                     existingPropertyImage.IdPropertyImage,
-                    CreatePropertyImageWithId(propertyImage, existingPropertyImage.IdPropertyImage)
-                );
+                    CreatePropertyImageWithId(propertyImage, existingPropertyImage.IdPropertyImage));
 
                 return await _propertyImageRepository.GetPropertyImageByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated property image.");
@@ -162,12 +161,12 @@ namespace RealEstate.Infrastructure.API.Services
                 IdPropertyImage = id,
                 IdProperty = propertyImage.IdProperty,
                 File = propertyImage.File,
-                Enabled = propertyImage.Enabled
+                Enabled = propertyImage.Enabled,
             } : new PropertyImage
             {
                 IdProperty = propertyImage.IdProperty,
                 File = propertyImage.File,
-                Enabled = propertyImage.Enabled
+                Enabled = propertyImage.Enabled,
             };
         }
 
