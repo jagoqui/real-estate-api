@@ -8,6 +8,8 @@ namespace RealEstate.Infrastructure.API.Extensions
         {
             services.AddSwaggerGen(static c =>
             {
+                c.EnableAnnotations();
+
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "RealEstate API", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -34,6 +36,8 @@ namespace RealEstate.Infrastructure.API.Extensions
                         Array.Empty<string>()
                     },
                 });
+
+                c.OperationFilter<MultipleFileUploadOperationFilter>();
             });
 
             return services;
