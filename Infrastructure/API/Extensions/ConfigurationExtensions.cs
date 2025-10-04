@@ -1,7 +1,7 @@
 using System.Text;
+using CloudinaryDotNet;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using RealEstate.Application.Contracts;
@@ -28,6 +28,37 @@ namespace RealEstate.Infrastructure.API.Extensions
             {
                 throw new FileNotFoundException($"The specified environment file does not exist: {envPath}");
             }
+        }
+
+        public static IServiceCollection AddCloudinary(this IServiceCollection services)
+        {
+            // 1. Obtener las credenciales del entorno
+            var cloudName = Environment.GetEnvironmentVariable("Cloudinary__CloudName")
+                             ?? throw new InvalidOperationException("Cloudinary__CloudName is missing.");
+            var apiKey = Environment.GetEnvironmentVariable("Cloudinary__ApiKey")
+                             ?? throw new InvalidOperationException("Cloudinary__ApiKey is missing.");
+            var apiSecret = Environment.GetEnvironmentVariable("Cloudinary__ApiSecret")
+                             ?? throw new InvalidOperationException("Cloudinary__ApiSecret is missing.");
+
+            // 2. Configurar la clase CloudinarySettings (opcional, pero buena práctica)
+            services.Configure<CloudinarySettings>(options =>
+            {
+                options.CloudName = cloudName;
+                options.ApiKey = apiKey;
+                options.ApiSecret = apiSecret;
+            });
+
+            // 3. Registrar el cliente Cloudinary como Singleton (es thread-safe y costoso de crear)
+            services.AddSingleton(sp =>
+            {
+                var account = new Account(cloudName, apiKey, apiSecret);
+                return new Cloudinary(account);
+            });
+
+            // 4. Registrar el servicio de subida de imágenes (Scoped)
+            services.AddScoped<IImageUploadService, ImageUploadService>();
+
+            return services;
         }
 
         public static IServiceCollection AddMongoDb(this IServiceCollection services, IConfiguration config)
