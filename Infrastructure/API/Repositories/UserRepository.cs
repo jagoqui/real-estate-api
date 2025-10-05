@@ -1,6 +1,6 @@
-using System;
 using MongoDB.Driver;
 using RealEstate.Application.Contracts;
+using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
 
 namespace RealEstate.Infrastructure.API.Repositories
@@ -35,21 +35,22 @@ namespace RealEstate.Infrastructure.API.Repositories
             return user;
         }
 
-        public async Task<bool> UpdateAsync(UserWithoutId user)
+        public async Task<User?> UpdateAsync(UserDto user)
         {
             var update = Builders<User>.Update
                 .Set(u => u.Email, user.Email)
                 .Set(u => u.Name, user.Name)
-                .Set(u => u.PhotoUrl, user.PhotoUrl);
+                .Set(u => u.PhotoUrl, user.PhotoUrl)
+                .Set(u => u.PhoneNumber, user.PhoneNumber)
+                .Set(u => u.Bio, user.Bio);
 
-            var userId = GetByGoogleIdAsync(user.GoogleId).Result?.Id;
-            if (userId == null)
+            if (user.Id == null)
             {
-                return false;
+                return null;
             }
 
-            var result = await _users.UpdateOneAsync(u => u.Id == userId, update);
-            return result.ModifiedCount == 1;
+            await _users.UpdateOneAsync(u => u.Id == user.Id, update);
+            return await GetByIdAsync(user.Id);
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
