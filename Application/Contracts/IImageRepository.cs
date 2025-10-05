@@ -1,27 +1,25 @@
-using Microsoft.AspNetCore.Http;
-
 namespace RealEstate.Application.Contracts
 {
     /// <summary>
-    /// Contrato para el repositorio encargado de la interacción directa con Cloudinary.
+    /// Contract for the repository responsible for direct interaction with Cloudinary.
     /// </summary>
     public interface IImageRepository
     {
         /// <summary>
-        /// Sube una sola imagen a Cloudinary.
+        /// Uploads a single image to Cloudinary.
         /// </summary>
-        /// <param name="file">Archivo de imagen a subir.</param>
-        /// <param name="folderName">Nombre de la carpeta en Cloudinary.</param>
-        /// <param name="fileName">Nombre opcional para el archivo.</param>
-        /// <returns>URL de la imagen subida en Cloudinary.</returns>
+        /// <param name="file">Image file to upload.</param>
+        /// <param name="folderName">Folder name in Cloudinary.</param>
+        /// <param name="fileName">Optional file name.</param>
+        /// <returns>URL of the uploaded image in Cloudinary.</returns>
         Task<string> UploadImageAsync(IFormFile file, string folderName, string? fileName = null);
 
         /// <summary>
-        /// Sube múltiples imágenes a Cloudinary.
+        /// Uploads multiple images to Cloudinary.
         /// </summary>
-        /// <param name="files">Lista de archivos de imagen a subir.</param>
-        /// <param name="folderName">Nombre de la carpeta en Cloudinary.</param>
-        /// <returns>Lista de URLs de las imágenes subidas en Cloudinary.</returns>
+        /// <param name="files">List of image files to upload.</param>
+        /// <param name="folderName">Folder name in Cloudinary.</param>
+        /// <returns>List of URLs of the uploaded images in Cloudinary.</returns>
         Task<List<string>> UploadImagesAsync(List<IFormFile> files, string folderName);
     }
 }
