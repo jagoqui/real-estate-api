@@ -19,42 +19,42 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         /// <summary>
-        /// Sube una sola imagen a Cloudinary.
+        /// Uploads a single image to Cloudinary.
         /// </summary>
-        /// <param name="file">Archivo de imagen a subir.</param>
-        /// <param name="folderName">Nombre de la carpeta en Cloudinary donde se subirá la imagen.</param>
-        /// <param name="fileName">Nombre opcional para el archivo subido.</param>
-        /// <returns>Devuelve una respuesta HTTP con la URL de la imagen subida.</returns>
+        /// <param name="file">Image file to upload.</param>
+        /// <param name="folderName">Name of the folder in Cloudinary where the image will be uploaded.</param>
+        /// <param name="fileName">Optional name for the uploaded file.</param>
+        /// <returns>Returns an HTTP response with the URL of the uploaded image.</returns>
         [HttpPost("upload")]
-        [SwaggerOperation(Summary = "Sube una imagen a Cloudinary.")]
+        [SwaggerOperation(Summary = "Uploads an image to Cloudinary.")]
         public async Task<IActionResult> UploadImageAsync(
             IFormFile file,
-            [FromQuery, DefaultValue("front-assets")] string folderName = "front-assets",
+            [FromQuery, DefaultValue("front-assets")] string folderName,
             [FromQuery] string? fileName = null)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("No se ha proporcionado un archivo válido.");
+                return BadRequest("No valid file provided.");
 
             var url = await _imageRepository.UploadImageAsync(file, folderName, fileName);
             return Ok(new { url });
         }
 
         /// <summary>
-        /// Sube múltiples imágenes a Cloudinary.
+        /// Uploads multiple images to Cloudinary.
         /// </summary>
-        /// <param name="files">Lista de archivos de imagen a subir.</param>
-        /// <param name="folderName">Nombre de la carpeta en Cloudinary donde se subirán las imágenes.</param>
-        /// <returns>Devuelve una respuesta HTTP con las URLs de las imágenes subidas.</returns>
+        /// <param name="files">List of image files to upload.</param>
+        /// <param name="folderName">Name of the folder in Cloudinary where the images will be uploaded.</param>
+        /// <returns>Returns an HTTP response with the URLs of the uploaded images.</returns>
         [HttpPost("upload-multiple")]
-        [SwaggerOperation(Summary = "Sube múltiples imágenes a Cloudinary.")]
+        [SwaggerOperation(Summary = "Uploads multiple images to Cloudinary using the original file name as reference.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadImagesAsync(
             [FromForm] List<IFormFile> files,
-            [FromQuery, DefaultValue("front-assets")] string folderName = "front-assets")
+            [FromQuery, DefaultValue("front-assets")] string folderName)
         {
             if (files == null || !files.Any())
-                return BadRequest("No se han proporcionado archivos válidos.");
+                return BadRequest("No valid files provided.");
 
             var urls = await _imageRepository.UploadImagesAsync(files, folderName);
             return Ok(new { urls });
