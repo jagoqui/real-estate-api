@@ -8,7 +8,6 @@ namespace RealEstate.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = nameof(UserRole.ADMIN))]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _service;
@@ -19,6 +18,8 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
         {
             var users = await _service.GetAllUsersAsync();
@@ -26,6 +27,9 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<ActionResult<UserDto>> GetUserById(string id)
         {
             try
@@ -39,7 +43,17 @@ namespace RealEstate.API.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDto user)
+        {
+            var updatedUser = await _service.UpdateAsync(id, user);
+            return updatedUser == null ? NotFound() : Ok(updatedUser);
+        }
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var success = await _service.DeleteUserAsync(id);
