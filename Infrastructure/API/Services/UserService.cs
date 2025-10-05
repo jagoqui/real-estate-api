@@ -1,5 +1,6 @@
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
+using RealEstate.Domain.Entities;
 
 namespace RealEstate.Application.Services
 {
@@ -44,16 +45,38 @@ namespace RealEstate.Application.Services
             };
         }
 
+        public async Task<UserDto> UpdateAsync(string id, UserDto user)
+        {
+            if (id != user.Id)
+            {
+                throw new ArgumentException("User ID mismatch.");
+            }
+            var updatedUser = await _repository.UpdateAsync(user);
+            if (updatedUser == null)
+            {
+                throw new KeyNotFoundException($"User with ID {user.Id} not found for update.");
+            }
+
+            return new UserDto
+            {
+                Id = updatedUser.Id!,
+                Email = updatedUser.Email,
+                Name = updatedUser.Name,
+                GoogleId = updatedUser.GoogleId,
+                Role = updatedUser.Role,
+            };
+        }
+
         public async Task<bool> DeleteUserAsync(string userId)
         {
             var user = await _repository.GetByIdAsync(userId);
             if (user == null)
             {
-                return false; // User not found
+                return false;
             }
 
             await _repository.DeleteAsync(userId);
-            return true; // User deleted successfully
+            return true;
         }
     }
 }
