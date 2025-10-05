@@ -70,10 +70,12 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<Owner> UpdateOwnerAsync(string id, OwnerWithoutIds owner)
+        public async Task<Owner> UpdateOwnerAsync(string id, Owner owner)
         {
-            if (owner == null)
-                throw new BadRequestException("Owner cannot be null.");
+            if (id != owner.IdOwner)
+            {
+                throw new BadRequestException("Owner ID mismatch.");
+            }
 
             var existingOwner = await EnsureOwnerExistsAsync(id);
             EnsureUserCanModifyOwner(existingOwner);
@@ -81,7 +83,6 @@ namespace RealEstate.Infrastructure.API.Services
             try
             {
                 await _ownerRepository.UpdateOwnerAsync(
-                    existingOwner.IdOwner,
                     CreateOwnerWithId(owner, existingOwner.UserId, existingOwner.IdOwner));
 
                 return await _ownerRepository.GetOwnerByIdAsync(id)
