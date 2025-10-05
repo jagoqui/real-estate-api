@@ -5,7 +5,6 @@ using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
-using RealEstate.Infrastructure.API.Services;
 using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Infrastructure.Services
@@ -24,7 +23,7 @@ namespace RealEstate.Infrastructure.Services
             IOwnerRepository ownerRepository,
             JwtHelper jwtHelper,
             IHttpContextAccessor httpContextAccessor,
-            IImageUploadService imageUploadService, // CORRECCIÓN: Usar la interfaz para la inyección de dependencias
+            IImageUploadService imageUploadService,
             IHttpClientFactory httpClientFactory)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
@@ -101,7 +100,6 @@ namespace RealEstate.Infrastructure.Services
             var httpContext = _httpContextAccessor.HttpContext
                               ?? throw new InvalidOperationException("No HttpContext available");
 
-            // Usamos un HttpClient diferente para el token
             using var tokenHttpClient = _httpClientFactory.CreateClient();
 
             var origin = httpContext.Request.Headers["Origin"].FirstOrDefault();
@@ -137,7 +135,6 @@ namespace RealEstate.Infrastructure.Services
 
             if (user == null)
             {
-                // ** Lógica para nuevo usuario: Descargar la foto y subirla a Cloudinary **
                 string? cloudinaryPhotoUrl = null;
                 string googlePhotoUrl = validPayload.Picture;
 
@@ -145,7 +142,6 @@ namespace RealEstate.Infrastructure.Services
                 {
                     try
                     {
-                        // 1. Descargar la imagen desde Google URL
                         using var imageHttpClient = _httpClientFactory.CreateClient();
                         var imageResponse = await imageHttpClient.GetAsync(googlePhotoUrl);
 
@@ -153,17 +149,12 @@ namespace RealEstate.Infrastructure.Services
                         {
                             var imageStream = await imageResponse.Content.ReadAsStreamAsync();
 
-                            // El stream de red no garantiza que se pueda buscar ni que su Length sea accesible.
-                            // Lo copiamos a un MemoryStream para crear el IFormFile.
                             using var memoryStream = new MemoryStream();
                             await imageStream.CopyToAsync(memoryStream);
-                            memoryStream.Position = 0; // Reiniciar para lectura
+                            memoryStream.Position = 0;
 
-                            // Intentamos obtener el ContentType de la respuesta
                             var contentType = imageResponse.Content.Headers.ContentType?.MediaType ?? MediaTypeNames.Image.Jpeg;
 
-                            // 2. Crear un IFormFile falso con el stream de la imagen
-                            // Usamos el subject de Google (ID único) como parte del nombre del archivo.
                             var fileExtension = contentType.Split('/').Last();
                             var fileName = $"google_{validPayload.Subject}.{fileExtension}";
 
@@ -173,13 +164,11 @@ namespace RealEstate.Infrastructure.Services
                                 ContentType = contentType,
                             };
 
-                            // 3. Subir a Cloudinary en la carpeta "user"
                             cloudinaryPhotoUrl = await _imageUploadService.UploadImageAsync(formFile, "user");
                         }
                     }
                     catch (Exception ex)
                     {
-                        // Registramos el error y continuamos usando la URL de Google (temporal)
                         Console.WriteLine($"[ERROR] Cloudinary upload for Google photo failed: {ex.Message}");
                     }
                 }
@@ -190,7 +179,6 @@ namespace RealEstate.Infrastructure.Services
                     Name = validPayload.Name,
                     GoogleId = validPayload.Subject,
 
-                    // Usamos la URL de Cloudinary si fue exitoso, si no, la de Google (temporal)
                     PhotoUrl = cloudinaryPhotoUrl ?? validPayload.Picture,
                     Role = UserRole.OWNER,
                 };
@@ -202,7 +190,7 @@ namespace RealEstate.Infrastructure.Services
                 user.Email = validPayload.Email;
                 user.Name = validPayload.Name;
 
-                await _userRepository.UpdateAsync(user);
+                await _userRepository.UpdateAsync(ToDto(user));
             }
 
             await SyncOwnerAsync(user);
@@ -225,18 +213,15 @@ namespace RealEstate.Infrastructure.Services
         // =======================
         public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
         {
-            // Buscar usuario que tenga este refresh token
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
             if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
             {
                 throw new UnauthorizedAccessException("Invalid or expired refresh token");
             }
 
-            // Generar nuevos tokens
-            var newAccessToken = _jwtHelper.GenerateAccessToken(user, 1); // 1 hora
+            var newAccessToken = _jwtHelper.GenerateAccessToken(user, 1);
             var newRefreshToken = _jwtHelper.GenerateRefreshToken();
 
-            // Guardar el nuevo refresh token e invalidar el anterior
             await _userRepository.SaveRefreshTokenAsync(user.Id!, newRefreshToken);
 
             return new AuthResponseDto
@@ -257,14 +242,12 @@ namespace RealEstate.Infrastructure.Services
             if (user?.Identity == null || !user.Identity.IsAuthenticated)
                 throw new UnauthorizedAccessException("User is not authenticated.");
 
-            // Extraer el userId desde los claims del JWT
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
                       ?? user.FindFirst("sub")?.Value;
 
             if (string.IsNullOrEmpty(userId))
                 throw new UnauthorizedAccessException("JWT does not contain a valid user identifier.");
 
-            // Invalidar el refresh token en base de datos
             await _userRepository.SaveRefreshTokenAsync(userId, string.Empty);
         }
 
@@ -320,7 +303,7 @@ namespace RealEstate.Infrastructure.Services
                 existingOwner.Name = user.Name ?? existingOwner.Name;
                 existingOwner.Photo = user.PhotoUrl ?? existingOwner.Photo;
 
-                await _ownerRepository.UpdateOwnerAsync(existingOwner.IdOwner, existingOwner);
+                await _ownerRepository.UpdateOwnerAsync(existingOwner);
             }
         }
     }
