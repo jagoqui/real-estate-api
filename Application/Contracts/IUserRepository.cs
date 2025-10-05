@@ -1,3 +1,4 @@
+using RealEstate.Application.DTOs;
 using RealEstate.Domain.Entities;
 
 namespace RealEstate.Application.Contracts
@@ -6,9 +7,9 @@ namespace RealEstate.Application.Contracts
     {
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGoogleIdAsync(string googleId);
-        Task<User?> GetByIdAsync(string id); // Obtener usuario por ID
+        Task<User?> GetByIdAsync(string id);
         Task<User> CreateAsync(User user);
-        Task<bool> UpdateAsync(UserWithoutId user);
+        Task<User?> UpdateAsync(UserDto user);
         Task<IEnumerable<User>> GetAllAsync();
         Task DeleteAsync(string userId);
 
