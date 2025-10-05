@@ -34,9 +34,9 @@ namespace RealEstate.Infrastructure.API.Repositories
             return owner;
         }
 
-        public async Task<Owner?> UpdateOwnerAsync(string id, Owner owner)
+        public async Task<Owner?> UpdateOwnerAsync(Owner owner)
         {
-            await _owners.ReplaceOneAsync(o => o.IdOwner == id, owner);
+            await _owners.ReplaceOneAsync(o => o.IdOwner == owner.IdOwner, owner);
 
             return owner;
         }
