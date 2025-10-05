@@ -1,27 +1,25 @@
-using Microsoft.AspNetCore.Http;
-
 namespace RealEstate.Application.Contracts
 {
     /// <summary>
-    /// Servicio de aplicación encargado de validar y delegar la subida de imágenes.
+    /// Application service responsible for validating and delegating image uploads.
     /// </summary>
     public interface IImageUploadService
     {
         /// <summary>
-        /// Valida y sube una sola imagen.
+        /// Validates and uploads a single image.
         /// </summary>
-        /// <param name="file">Archivo de imagen a subir.</param>
-        /// <param name="folderName">Nombre de la carpeta donde se guardará la imagen.</param>
-        /// <param name="fileName">Nombre opcional para el archivo subido.</param>
-        /// <returns>Una tarea que representa la operación y contiene la URL o ruta de la imagen subida.</returns>
+        /// <param name="file">Image file to upload.</param>
+        /// <param name="folderName">Name of the folder where the image will be saved.</param>
+        /// <param name="fileName">Optional name for the uploaded file.</param>
+        /// <returns>A task representing the operation and containing the URL or path of the uploaded image.</returns>
         Task<string> UploadImageAsync(IFormFile file, string folderName, string? fileName = null);
 
         /// <summary>
-        /// Valida y sube múltiples imágenes usando su nombre original.
+        /// Validates and uploads multiple images using their original names.
         /// </summary>
-        /// <param name="files">Lista de archivos de imagen a subir.</param>
-        /// <param name="folderName">Nombre de la carpeta donde se guardarán las imágenes.</param>
-        /// <returns>Una tarea que representa la operación y contiene una lista de URLs o rutas de las imágenes subidas.</returns>
+        /// <param name="files">List of image files to upload.</param>
+        /// <param name="folderName">Name of the folder where the images will be saved.</param>
+        /// <returns>A task representing the operation and containing a list of URLs or paths of the uploaded images.</returns>
         Task<List<string>> UploadImagesAsync(List<IFormFile> files, string folderName);
     }
 }
