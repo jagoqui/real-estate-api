@@ -20,7 +20,6 @@ namespace RealEstate.Domain.Entities
 
     public class OwnerWithoutId : OwnerWithoutIds
     {
-
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonElement("UserId")]
         public string UserId { get; set; } = null!;
