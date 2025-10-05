@@ -36,17 +36,18 @@ namespace RealEstate.Infrastructure.API.Repositories
         {
             using var stream = file.OpenReadStream();
 
-            string publicFileName = string.IsNullOrWhiteSpace(fileName)
-                ? Path.GetFileNameWithoutExtension(file.FileName)
+            // Genera un nombre autogenerado si no se pasa fileName
+            var publicFileName = string.IsNullOrWhiteSpace(fileName)
+                ? Guid.NewGuid().ToString("N") // nombre aleatorio
                 : fileName;
 
+            // Cloudinary construye la ruta final con Folder + PublicId
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                PublicId = $"real-estate-app/images/{folderName}/{publicFileName}",
-                DisplayName = publicFileName,
-                Folder = $"real-estate-app/images/{folderName}",
-                Transformation = new Transformation().Quality("auto").FetchFormat("auto"),
+                PublicId = publicFileName, // <-- solo el nombre + extensión
+                Folder = $"real-estate-app/images/{folderName}", // <-- no incluir aquí el nombre
+                Transformation = new Transformation().Quality("auto"), // <-- sin FetchFormat("auto")
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
