@@ -15,6 +15,12 @@ namespace RealEstate.Domain.Entities
         [BsonElement("name")]
         public string? Name { get; set; }
 
+        [BsonElement("phoneNumber")]
+        public string? PhoneNumber { get; set; }
+
+        [BsonElement("bio")]
+        public string? Bio { get; set; }
+
         [BsonElement("photoUrl")]
         public string PhotoUrl { get; set; } = null!;
 
