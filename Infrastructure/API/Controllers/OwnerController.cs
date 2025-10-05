@@ -59,7 +59,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         [ProducesResponseType(typeof(Owner), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateOwner(string id, [FromBody] OwnerWithoutIds owner)
+        public async Task<IActionResult> UpdateOwner(string id, [FromBody] Owner owner)
         {
             var updatedOwner = await _ownerService.UpdateOwnerAsync(id, owner);
             return updatedOwner == null ? NotFound() : Ok(updatedOwner);
