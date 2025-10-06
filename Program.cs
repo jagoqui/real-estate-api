@@ -12,7 +12,7 @@ builder.LoadEnvironment();
 // MongoDB & JWT
 // =======================
 builder.Services.AddMongoDb(builder.Configuration);
-builder.Services.AddJwtAuth(builder.Configuration);
+builder.Services.AddJwtAuth();
 
 // =======================
 // Cloudinary & HTTP Client (NUEVAS ADICIONES)

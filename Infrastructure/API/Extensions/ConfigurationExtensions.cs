@@ -82,7 +82,7 @@ namespace RealEstate.Infrastructure.API.Extensions
             return services;
         }
 
-        public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddJwtAuth(this IServiceCollection services)
         {
             var jwtSecret = Environment.GetEnvironmentVariable("Jwt__Secret")
                             ?? throw new InvalidOperationException("JWT secret missing");
