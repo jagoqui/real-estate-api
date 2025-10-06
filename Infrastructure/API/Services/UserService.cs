@@ -1,16 +1,22 @@
+using MongoDB.Driver;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
-using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Application.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly JwtHelper _jwtHelper;
+        private readonly IImageUploadService _imageUploadService;
 
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository repository, JwtHelper jwtHelper, IImageUploadService imageUploadService)
         {
             _repository = repository;
+            _jwtHelper = jwtHelper;
+            _imageUploadService = imageUploadService;
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
