@@ -45,9 +45,9 @@ namespace RealEstate.Infrastructure.API.Repositories
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                PublicId = publicFileName, // <-- only the name + extension
-                Folder = $"real-estate-app/images/{folderName}", // <-- do not include the name here
-                Transformation = new Transformation().Quality("auto"), // <-- without FetchFormat("auto")
+                PublicId = publicFileName,
+                Folder = $"real-estate-app/images/{folderName}",
+                Transformation = new Transformation().Quality("auto"),
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
