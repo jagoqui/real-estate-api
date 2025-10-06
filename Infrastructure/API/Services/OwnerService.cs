@@ -43,6 +43,17 @@ namespace RealEstate.Infrastructure.API.Services
                    ?? throw new NotFoundException($"No owner found with User ID {userId}.");
         }
 
+        public async Task<int> GetPropertiesCountByOwnerIdAsync(string ownerId)
+        {
+            var properties = await _propertyRepository.GetPropertiesByOwnerIdAsync(ownerId);
+            if (properties == null)
+            {
+                throw new NotFoundException($"No properties found for Owner ID {ownerId}.");
+            }
+
+            return properties.Count();
+        }
+
         public async Task<Owner> AddOwnerAsync(OwnerWithoutIds owner)
         {
             if (owner == null)

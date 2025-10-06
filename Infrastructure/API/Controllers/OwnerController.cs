@@ -55,6 +55,15 @@ namespace RealEstate.Infrastructure.API.Controllers
             return CreatedAtAction(nameof(GetOwnerById), new { id = createdOwner.IdOwner }, createdOwner);
         }
 
+        [HttpGet("{id}/properties-count")]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPropertiesCountByOwnerId(string id)
+        {
+            var count = await _ownerService.GetPropertiesCountByOwnerIdAsync(id);
+            return Ok(count);
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Owner), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
