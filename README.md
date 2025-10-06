@@ -8,11 +8,19 @@ API REST para gestión de propiedades inmobiliarias construida con .NET 9, Mongo
 📡 **Documentación Swagger**: [https://real-estate-api-i4og.onrender.com/swagger/index.html](https://real-estate-api-i4og.onrender.com/swagger/index.html)
 🤖 **Documentación automática** [Deepwiki](https://deepwiki.com/jagoqui/real-estate-api)
 
-## �📋 Tabla de Contenidos
+## 📋 Tabla de Contenidos
 
 - [🌐 Demo en Vivo](#-demo-en-vivo)
 - [📖 Descripción](#-descripción)
-- [🚀 Inicio Rápido](#-inicio-rápido)
+  - [🎯 Funcionalidades Principales](#-funcionalidades-principales)
+  - [🔧 Características Técnicas Avanzadas](#-características-técnicas-avanzadas)
+  - [💼 Casos de Uso Empresariales](#-casos-de-uso-empresariales)
+  - [🎯 Beneficios del Sistema](#-beneficios-del-sistema)
+- [� Ejemplos de Uso](#-ejemplos-de-uso)
+  - [📝 Flujo Típico de Operaciones](#-flujo-típico-de-operaciones)
+  - [🔍 Consultas Avanzadas](#-consultas-avanzadas)
+  - [📊 Respuestas de Ejemplo](#-respuestas-de-ejemplo)
+- [�🚀 Inicio Rápido](#-inicio-rápido)
 - [🏗️ Arquitectura](#️-arquitectura)
 - [📊 Diagrama de Base de Datos](#-diagrama-de-base-de-datos)
 - [🛠️ Tecnologías y Herramientas](#️-tecnologías-y-herramientas)
