@@ -57,10 +57,10 @@ namespace RealEstate.API.Controllers
             return Ok(result);
         }
 
-        // =======================
-        // Refresh Token
-        // =======================
         [HttpPost("refresh-token")]
+        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
             var result = await _authService.RefreshTokenAsync(refreshTokenDto.RefreshToken);
