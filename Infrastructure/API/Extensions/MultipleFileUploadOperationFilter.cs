@@ -5,18 +5,14 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace RealEstate.Infrastructure.API.Extensions
 {
-    /// <summary>
-    /// Permite que Swagger renderice correctamente un input múltiple para List&lt;IFormFile&gt;.
-    /// </summary>
     public class MultipleFileUploadOperationFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var parameters = context.MethodInfo.GetParameters();
 
-            // Detecta parámetros tipo List<IFormFile> o IEnumerable<IFormFile>
             var multiFileParams = parameters
-                .Where(p =>
+                .Where(static p =>
                     p.ParameterType == typeof(List<IFormFile>) ||
                     p.ParameterType == typeof(IFormFile[]) ||
                     (p.ParameterType.IsGenericType &&
