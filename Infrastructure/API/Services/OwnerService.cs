@@ -95,8 +95,9 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
+                // TODO: Validate fields if necessary
                 await _ownerRepository.UpdateOwnerAsync(
-                    CreateOwnerWithId(owner, existingOwner.UserId, existingOwner.IdOwner));
+                    CreateOwnerWithId(owner, existingOwner.UserId!, existingOwner.IdOwner));
 
                 return await _ownerRepository.GetOwnerByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated owner.");
