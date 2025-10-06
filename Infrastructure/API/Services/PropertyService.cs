@@ -121,6 +121,18 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
+        private async Task<Property> EnsurePropertyExistsAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new BadRequestException("Property ID cannot be empty.");
+
+            var property = await _propertyRepository.GetPropertyByIdAsync(id);
+            if (property == null)
+                throw new NotFoundException($"No property found with ID {id}.");
+
+            return property;
+        }
+
         private Property CreatePropertyWithId(PropertyWithoutId property, string? id = null)
         {
             return id != null ? new Property
