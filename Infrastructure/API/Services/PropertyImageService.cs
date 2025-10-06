@@ -161,7 +161,8 @@ namespace RealEstate.Infrastructure.API.Services
                 IdProperty = propertyImage.IdProperty,
                 File = propertyImage.File,
                 Enabled = propertyImage.Enabled,
-            } : new PropertyImage
+            }
+            : new PropertyImage
             {
                 IdProperty = propertyImage.IdProperty,
                 File = propertyImage.File,
