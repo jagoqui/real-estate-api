@@ -23,7 +23,6 @@ namespace RealEstate.Infrastructure.API.Extensions
             if (!multiFileParams.Any())
                 return;
 
-            // ✅ Genera un esquema compatible con Swagger UI (agrega explicitly multiple: true)
             operation.RequestBody = new OpenApiRequestBody
             {
                 Required = true,
