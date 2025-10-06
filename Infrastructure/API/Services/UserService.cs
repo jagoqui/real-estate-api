@@ -1,4 +1,3 @@
-using MongoDB.Driver;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
 using RealEstate.Domain.Enums;
