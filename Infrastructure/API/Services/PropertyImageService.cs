@@ -117,7 +117,6 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-
         public async Task DeletePropertyImageAsync(string id)
         {
             await EnsurePropertyImageExistsAsync(id);
