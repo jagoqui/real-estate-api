@@ -185,13 +185,6 @@ namespace RealEstate.Infrastructure.Services
 
                 await _userRepository.CreateAsync(user);
             }
-            else
-            {
-                user.Email = validPayload.Email;
-                user.Name = validPayload.Name;
-
-                await _userRepository.UpdateAsync(ToDto(user));
-            }
 
             await SyncOwnerAsync(user);
 
@@ -208,9 +201,6 @@ namespace RealEstate.Infrastructure.Services
             };
         }
 
-        // =======================
-        // Refresh Token
-        // =======================
         public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
         {
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
