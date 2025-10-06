@@ -35,5 +35,50 @@ namespace RealEstate.Infrastructure.API.Services
 
             return await _imageRepository.UploadImagesAsync(files, folderName);
         }
+
+        public async Task<bool> DeleteImageAsync(string imageUrl)
+        {
+            var publicId = GetPublicIdFromUrl(imageUrl);
+
+            if (string.IsNullOrEmpty(publicId))
+            {
+                return false;
+            }
+
+            return await _imageRepository.DeleteImageAsync(publicId);
+        }
+
+        private string? GetPublicIdFromUrl(string imageUrl)
+        {
+            try
+            {
+                var uri = new Uri(imageUrl);
+                var segments = uri.Segments;
+
+                var uploadIndex = Array.FindIndex(segments, s => s.Contains("upload/"));
+
+                if (uploadIndex == -1 || uploadIndex >= segments.Length - 1)
+                {
+                    return null;
+                }
+
+                var pathAfterVersion = segments.Skip(uploadIndex + 2);
+
+                if (!pathAfterVersion.Any())
+                {
+                    return null;
+                }
+
+                var fullPath = string.Join(string.Empty, pathAfterVersion);
+
+                return fullPath.Contains('.')
+                    ? fullPath[..fullPath.LastIndexOf('.')]
+                    : fullPath;
+            }
+            catch (UriFormatException)
+            {
+                return null;
+            }
+        }
     }
 }
