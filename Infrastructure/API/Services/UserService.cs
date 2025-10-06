@@ -91,7 +91,10 @@ namespace RealEstate.Application.Services
                     user.PhotoUrl = imageUrl;
                 }
 
-                await _imageUploadService.DeleteImageAsync(existingUser.PhotoUrl);
+                if (!string.IsNullOrEmpty(existingUser.PhotoUrl))
+                {
+                    await _imageUploadService.DeleteImageAsync(existingUser.PhotoUrl);
+                }
             }
 
             var userUpdateResult = await _repository.UpdateAsync(new UserDto
