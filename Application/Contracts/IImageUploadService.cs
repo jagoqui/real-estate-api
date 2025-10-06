@@ -21,5 +21,12 @@ namespace RealEstate.Application.Contracts
         /// <param name="folderName">Name of the folder where the images will be saved.</param>
         /// <returns>A task representing the operation and containing a list of URLs or paths of the uploaded images.</returns>
         Task<List<string>> UploadImagesAsync(List<IFormFile> files, string folderName);
+
+        /// <summary>
+        /// Deletes an image based on its URL.
+        /// </summary>
+        /// <param name="imageUrl">The URL of the image to delete.</param>
+        /// <returns>A task representing the operation and containing a boolean indicating success or failure.</returns>
+        Task<bool> DeleteImageAsync(string imageUrl);
     }
 }

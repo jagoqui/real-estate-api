@@ -21,5 +21,7 @@ namespace RealEstate.Application.Contracts
         /// <param name="folderName">Folder name in Cloudinary.</param>
         /// <returns>List of URLs of the uploaded images in Cloudinary.</returns>
         Task<List<string>> UploadImagesAsync(List<IFormFile> files, string folderName);
+
+        Task<bool> DeleteImageAsync(string publicId);
     }
 }
