@@ -131,21 +131,5 @@ namespace RealEstate.Infrastructure.Utils
             var principal = GetPrincipalFromExpiredToken(token);
             return principal?.FindFirst(claimType)?.Value;
         }
-
-        // =======================
-        // Obtener UserId
-        // =======================
-        public string? GetUserIdFromToken()
-        {
-            return GetClaimFromToken(ClaimTypes.NameIdentifier);
-        }
-
-        // =======================
-        // Obtener Role
-        // =======================
-        public string? GetUserRoleFromToken()
-        {
-            return GetClaimFromToken(ClaimTypes.Role);
-        }
     }
 }
