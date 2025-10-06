@@ -16,9 +16,6 @@ namespace RealEstate.API.Controllers
             _authService = authService;
         }
 
-        // =======================
-        // Register
-        // =======================
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequestDto request)
         {
@@ -35,9 +32,6 @@ namespace RealEstate.API.Controllers
             });
         }
 
-        // =======================
-        // Login
-        // =======================
         [HttpPost("email-login")]
         public async Task<ActionResult> EmailLogin([FromBody] LoginRequestDto request)
         {
@@ -53,9 +47,6 @@ namespace RealEstate.API.Controllers
             });
         }
 
-        // =======================
-        // Login with Google
-        // =======================
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthCodeDto dto)
         {
