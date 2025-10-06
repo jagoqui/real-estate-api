@@ -32,7 +32,6 @@ namespace RealEstate.Infrastructure.API.Extensions
 
         public static IServiceCollection AddCloudinary(this IServiceCollection services)
         {
-            // 1. Obtener las credenciales del entorno
             var cloudName = Environment.GetEnvironmentVariable("Cloudinary__CloudName")
                              ?? throw new InvalidOperationException("Cloudinary__CloudName is missing.");
             var apiKey = Environment.GetEnvironmentVariable("Cloudinary__ApiKey")
@@ -40,7 +39,6 @@ namespace RealEstate.Infrastructure.API.Extensions
             var apiSecret = Environment.GetEnvironmentVariable("Cloudinary__ApiSecret")
                              ?? throw new InvalidOperationException("Cloudinary__ApiSecret is missing.");
 
-            // 2. Configurar la clase CloudinarySettings (opcional, pero buena práctica)
             services.Configure<CloudinarySettings>(options =>
             {
                 options.CloudName = cloudName;
@@ -48,14 +46,12 @@ namespace RealEstate.Infrastructure.API.Extensions
                 options.ApiSecret = apiSecret;
             });
 
-            // 3. Registrar el cliente Cloudinary como Singleton (es thread-safe y costoso de crear)
             services.AddSingleton(sp =>
             {
                 var account = new Account(cloudName, apiKey, apiSecret);
                 return new Cloudinary(account);
             });
 
-            // 4. Registrar el servicio de subida de imágenes (Scoped)
             services.AddScoped<IImageUploadService, ImageUploadService>();
 
             return services;
