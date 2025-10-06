@@ -38,7 +38,6 @@ namespace RealEstate.Infrastructure.API.Repositories
         public async Task<User?> UpdateAsync(UserDto user)
         {
             var update = Builders<User>.Update
-                .Set(u => u.Email, user.Email)
                 .Set(u => u.Name, user.Name)
                 .Set(u => u.PhotoUrl, user.PhotoUrl)
                 .Set(u => u.PhoneNumber, user.PhoneNumber)
