@@ -92,6 +92,22 @@ namespace RealEstate.Infrastructure.Utils
         }
 
         // =======================
+        // Obtener UserId
+        // =======================
+        public string? GetUserIdFromToken()
+        {
+            return GetClaimFromToken(ClaimTypes.NameIdentifier);
+        }
+
+        // =======================
+        // Obtener Role
+        // =======================
+        public string? GetUserRoleFromToken()
+        {
+            return GetClaimFromToken(ClaimTypes.Role);
+        }
+
+        // =======================
         // Extraer token desde Headers
         // =======================
         private string? GetTokenFromHeaders()
