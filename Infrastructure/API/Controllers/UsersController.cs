@@ -44,9 +44,10 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-        [Authorize(Roles = nameof(UserRole.ADMIN))]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserDto user)
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(string id, [FromForm] UserWithFileDto user)
         {
             var updatedUser = await _service.UpdateAsync(id, user);
             return updatedUser == null ? NotFound() : Ok(updatedUser);

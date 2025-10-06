@@ -45,25 +45,75 @@ namespace RealEstate.Application.Services
             };
         }
 
-        public async Task<UserDto> UpdateAsync(string id, UserDto user)
+        public async Task<UserDto> UpdateAsync(string id, UserWithFileDto user)
         {
             if (id != user.Id)
             {
                 throw new ArgumentException("User ID mismatch.");
             }
-            var updatedUser = await _repository.UpdateAsync(user);
-            if (updatedUser == null)
+
+            var userId = _jwtHelper.GetUserIdFromToken();
+            var userRole = _jwtHelper.GetUserRoleFromToken();
+
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new KeyNotFoundException($"User with ID {user.Id} not found for update.");
+                throw new UnauthorizedAccessException("Invalid or missing JWT.");
+            }
+
+            var existingUser = await _repository.GetByIdAsync(id);
+
+            if (existingUser == null)
+            {
+                throw new KeyNotFoundException($"User with ID {id} not found.");
+            }
+
+            var isCurrentUser = existingUser.Id == userId;
+
+            var isAdmin = userRole == UserRole.ADMIN.ToString();
+
+            if (!isCurrentUser && !isAdmin)
+            {
+                throw new UnauthorizedAccessException("You do not have permission to update this user.");
+            }
+
+            if (user.PhotoFile != null)
+            {
+                var imageUrl = await _imageUploadService.UploadImageAsync(user.PhotoFile, "users");
+
+                if (!string.IsNullOrEmpty(imageUrl))
+                {
+                    user.PhotoUrl = imageUrl;
+                }
+
+                await _imageUploadService.DeleteImageAsync(existingUser.PhotoUrl);
+            }
+
+            var userUpdateResult = await _repository.UpdateAsync(new UserDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                PhotoUrl = user.PhotoUrl,
+                PhoneNumber = user.PhoneNumber,
+                Bio = user.Bio,
+            });
+
+            if (userUpdateResult == null)
+            {
+                await _imageUploadService.DeleteImageAsync(user.PhotoUrl!);
+
+                throw new KeyNotFoundException($"User with ID {user.Id} not found after image upload.");
             }
 
             return new UserDto
             {
-                Id = updatedUser.Id!,
-                Email = updatedUser.Email,
-                Name = updatedUser.Name,
-                GoogleId = updatedUser.GoogleId,
-                Role = updatedUser.Role,
+                Id = userUpdateResult.Id!,
+                Email = userUpdateResult.Email,
+                Name = userUpdateResult.Name,
+                GoogleId = userUpdateResult.GoogleId,
+                Role = userUpdateResult.Role,
+                PhoneNumber = userUpdateResult.PhoneNumber,
+                Bio = userUpdateResult.Bio,
+                PhotoUrl = userUpdateResult.PhotoUrl,
             };
         }
 
