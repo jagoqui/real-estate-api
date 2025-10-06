@@ -144,7 +144,8 @@ namespace RealEstate.Infrastructure.API.Services
                 CodeInternal = property.CodeInternal,
                 Year = property.Year,
                 IdOwner = property.IdOwner,
-            } : new Property
+            }
+            : new Property
             {
                 Name = property.Name,
                 Address = property.Address,
