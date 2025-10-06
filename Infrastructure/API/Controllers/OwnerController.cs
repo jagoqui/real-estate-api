@@ -9,11 +9,11 @@ namespace RealEstate.Infrastructure.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class OwnerController : ControllerBase
+    public class OwnersController : ControllerBase
     {
         private readonly IOwnerService _ownerService;
 
-        public OwnerController(IOwnerService ownerService)
+        public OwnersController(IOwnerService ownerService)
         {
             _ownerService = ownerService;
         }
