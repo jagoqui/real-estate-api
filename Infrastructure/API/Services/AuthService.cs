@@ -251,6 +251,8 @@ namespace RealEstate.Infrastructure.Services
             Name = user.Name,
             PhotoUrl = user.PhotoUrl,
             Role = user.Role,
+            PhoneNumber = user.PhoneNumber,
+            Bio = user.Bio,
         };
 
         private void ValidateEmail(string email)
