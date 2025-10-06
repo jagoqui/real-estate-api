@@ -34,25 +34,25 @@ namespace RealEstate.Infrastructure.API.Extensions
                         {
                             Type = "object",
                             Properties = multiFileParams.ToDictionary(
-                                p => p.Name,
-                                _ => new OpenApiSchema
+                                static p => p.Name ?? "files",
+                                static _ => new OpenApiSchema
                                 {
                                     Type = "array",
                                     Items = new OpenApiSchema
                                     {
                                         Type = "string",
-                                        Format = "binary"
+                                        Format = "binary",
                                     },
-                                    // 👇 Hack necesario para que Swagger UI agregue el atributo "multiple"
+
                                     Extensions = new Dictionary<string, IOpenApiExtension>
                                     {
                                         ["x-ms-allow-multiple"] = new OpenApiBoolean(true),
-                                        ["x-multiple"] = new OpenApiBoolean(true)
-                                    }
-                                })
-                        }
-                    }
-                }
+                                        ["x-multiple"] = new OpenApiBoolean(true),
+                                    },
+                                }),
+                        },
+                    },
+                },
             };
         }
     }
