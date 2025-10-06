@@ -286,6 +286,8 @@ namespace RealEstate.Infrastructure.Services
                     Address = string.Empty,
                     Photo = user.PhotoUrl ?? string.Empty,
                     Birthday = DateTime.MinValue,
+                    Phone = user.PhoneNumber ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
                 };
 
                 await _ownerRepository.AddOwnerAsync(newOwner);

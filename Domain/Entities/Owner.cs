@@ -11,11 +11,20 @@ namespace RealEstate.Domain.Entities
         [BsonElement("Address")]
         public string Address { get; set; } = null!;
 
+        [BsonElement("Phone")]
+        public string Phone { get; set; } = null!;
+
+        [BsonElement("Email")]
+        public string Email { get; set; } = null!;
+
         [BsonElement("Photo")]
         public string Photo { get; set; } = null!;
 
         [BsonElement("Birthday")]
         public DateTime Birthday { get; set; }
+
+        [BsonElement("CreatedAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class OwnerWithoutId : OwnerWithoutIds

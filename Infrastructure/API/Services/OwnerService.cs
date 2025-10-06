@@ -69,6 +69,8 @@ namespace RealEstate.Infrastructure.API.Services
                 Address = owner.Address,
                 Photo = owner.Photo,
                 Birthday = owner.Birthday,
+                Phone = owner.Phone,
+                Email = owner.Email,
             };
 
             try
@@ -171,6 +173,8 @@ namespace RealEstate.Infrastructure.API.Services
                     Address = owner.Address,
                     Photo = owner.Photo,
                     Birthday = owner.Birthday,
+                    Phone = owner.Phone,
+                    Email = owner.Email,
                 }
                 : new Owner
                 {
@@ -179,6 +183,8 @@ namespace RealEstate.Infrastructure.API.Services
                     Address = owner.Address,
                     Photo = owner.Photo,
                     Birthday = owner.Birthday,
+                    Phone = owner.Phone,
+                    Email = owner.Email,
                 };
         }
     }
