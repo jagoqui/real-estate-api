@@ -34,8 +34,10 @@ namespace RealEstate.Infrastructure.Services
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<AuthResponseDto> RegisterAsync(string email, string name, string password)
+        public async Task<AuthResponseDto> RegisterAsync(UserCreateDto request)
         {
+            var (email, name, password) = (request.Email, request.Name, request.Password);
+
             ValidateEmail(email);
             ValidatePassword(password);
 
