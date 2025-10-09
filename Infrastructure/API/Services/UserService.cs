@@ -63,6 +63,9 @@ namespace RealEstate.Application.Services
                 Name = u.Name,
                 GoogleId = u.GoogleId,
                 Role = u.Role,
+                PhotoUrl = u.PhotoUrl,
+                PhoneNumber = u.PhoneNumber,
+                Bio = u.Bio,
             });
         }
 
