@@ -70,16 +70,6 @@ namespace RealEstate.Infrastructure.API.Controllers
             return Ok(count);
         }
 
-        [HttpGet("without-userid")]
-        [SwaggerOperation(Summary = "Retrieves all owners without an associated user ID. Admin role required.")]
-        [ProducesResponseType(typeof(IEnumerable<Owner>), StatusCodes.Status200OK)]
-        [Authorize(Roles = nameof(UserRole.ADMIN))]
-        public async Task<IActionResult> GetOwnersWithoutUserId()
-        {
-            var owners = await _ownerService.GetOwnersWithoutUserIdAsync();
-            return Ok(owners);
-        }
-
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Updates an existing owner by their ID.")]
         [Consumes("application/json")]

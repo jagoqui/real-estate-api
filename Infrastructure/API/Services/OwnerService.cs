@@ -103,47 +103,6 @@ namespace RealEstate.Infrastructure.API.Services
             return properties.Count();
         }
 
-        public async Task<IEnumerable<Owner>> GetOwnersWithoutUserIdAsync()
-        {
-            try
-            {
-                return await _ownerRepository.GetOwnersWithoutUserIdAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerErrorException("Error retrieving owners without user ID.", ex);
-            }
-        }
-
-        public async Task<Owner> AddOwnerAsync(OwnerWithoutIds owner)
-        {
-            if (owner == null)
-                throw new BadRequestException("Owner cannot be null.");
-
-            var userId = _jwtHelper.GetUserIdFromToken();
-            if (string.IsNullOrEmpty(userId))
-                throw new UnauthorizedAccessException("Invalid or missing JWT.");
-
-            var newOwner = new OwnerWithoutIds
-            {
-                Name = owner.Name,
-                Address = owner.Address,
-                Photo = owner.Photo,
-                Birthday = owner.Birthday,
-                Phone = owner.Phone,
-                Email = owner.Email,
-            };
-
-            try
-            {
-                return await _ownerRepository.AddOwnerAsync(CreateOwnerWithId(newOwner, userId));
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerErrorException("Error adding owner.", ex);
-            }
-        }
-
         public async Task<Owner> UpdateOwnerAsync(string id, Owner owner)
         {
             if (id != owner.IdOwner)
