@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RealEstate.Infrastructure.API.Controllers
 {
@@ -16,6 +17,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet]
+        [SwaggerOperation(Summary = "Retrieves all property images.")]
         [ProducesResponseType(typeof(IEnumerable<PropertyImage>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllPropertyImages()
         {
@@ -24,6 +26,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Retrieves a property image by its ID.")]
         [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPropertyImageById(string id)
@@ -35,6 +38,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet("property/{propertyId}")]
+        [SwaggerOperation(Summary = "Retrieves all images associated with a specific property ID.")]
         [ProducesResponseType(typeof(IEnumerable<PropertyImage>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPropertyImagesByPropertyId(string propertyId)
@@ -46,6 +50,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Creates a new property image.")]
         [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreatePropertyImage([FromBody] PropertyImageWithoutId propertyImage)
@@ -55,6 +60,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Updates an existing property image by its ID.")]
+        [Consumes("application/json")]
         [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,6 +74,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpPatch("{idPropertyImage}/file")]
+        [SwaggerOperation(Summary = "Updates the file of an existing property image by its ID.")]
         [ProducesResponseType(typeof(PropertyImage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,6 +87,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Deletes a property image by its ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeletePropertyImage(string id)
