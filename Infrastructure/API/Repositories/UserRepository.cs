@@ -8,10 +8,12 @@ namespace RealEstate.Infrastructure.API.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IMongoCollection<User> _users;
+        private readonly IOwnerRepository _ownerRepository;
 
-        public UserRepository(IMongoDatabase database)
+        public UserRepository(IMongoDatabase database, IOwnerRepository ownerRepository)
         {
             _users = database.GetCollection<User>("Users");
+            _ownerRepository = ownerRepository;
         }
 
         public async Task<User> CreateAsync(User user)
@@ -50,6 +52,15 @@ namespace RealEstate.Infrastructure.API.Repositories
 
             await _users.UpdateOneAsync(u => u.Id == user.Id, update);
             return await GetByIdAsync(user.Id);
+        }
+
+        public async Task<IEnumerable<User>> GetUserWithoutOwnersAsync()
+        {
+            var owners = await _ownerRepository.GetOwnersAsync();
+            var ownerUserIds = owners.Where(o => !string.IsNullOrEmpty(o.UserId)).Select(o => o.UserId).ToHashSet();
+
+            var filter = Builders<User>.Filter.Nin(u => u.Id, ownerUserIds);
+            return await _users.Find(filter).ToListAsync();
         }
 
         public async Task<User?> RecoverAsync(string userId, string email, string newPasswordHash)
