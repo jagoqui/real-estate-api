@@ -82,6 +82,20 @@ namespace RealEstate.Application.Services
             };
         }
 
+        public async Task<IEnumerable<UserDto>> GetUsersWithoutOwnersAsync()
+        {
+            var users = await _repository.GetUserWithoutOwnersAsync();
+
+            return users.Select(u => new UserDto
+            {
+                Id = u.Id!,
+                Email = u.Email,
+                Name = u.Name,
+                GoogleId = u.GoogleId,
+                Role = u.Role,
+            });
+        }
+
         public async Task<UserDto> UpdateAsync(string id, UserWithFileDto user)
         {
             if (id != user.Id)
