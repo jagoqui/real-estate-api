@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.DTOs;
 using RealEstate.Application.Services;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RealEstate.API.Controllers
 {
@@ -17,7 +19,27 @@ namespace RealEstate.API.Controllers
             _service = service;
         }
 
+        [HttpPost]
+        [SwaggerOperation(Summary = "Creates a new user.")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserCreateDto request)
+        {
+            try
+            {
+                var createdUser = await _service.CreateUserAsync(request);
+                return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet]
+        [SwaggerOperation(Summary = "Retrieves all users. Admin role required.")]
         [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
@@ -27,6 +49,7 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Retrieves a user by their ID. Admin role required.")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
@@ -44,6 +67,7 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Updates an existing user by their ID.")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [Authorize]
@@ -53,7 +77,31 @@ namespace RealEstate.API.Controllers
             return updatedUser == null ? NotFound() : Ok(updatedUser);
         }
 
+        [HttpPost("recover")]
+        [SwaggerOperation(Summary = "Recovers a user's password.")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
+        public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequest request)
+        {
+            try
+            {
+                var user = await _service.RecoverPasswordAsync(request);
+                return Ok(user);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Deletes a user by their ID. Admin role required.")]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<IActionResult> DeleteUser(string id)
         {
