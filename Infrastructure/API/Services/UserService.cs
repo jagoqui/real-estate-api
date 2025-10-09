@@ -188,6 +188,30 @@ namespace RealEstate.Application.Services
                 return false;
             }
 
+            if (user.Role == UserRole.ADMIN)
+            {
+                throw new InvalidOperationException("Cannot delete an admin user.");
+            }
+
+            var associatedOwner = await _ownerRepository.GetOwnerByUserIdAsync(userId);
+            if (associatedOwner != null)
+            {
+                throw new InvalidOperationException($"Cannot delete user. Please first delete the associated owner with ID: {associatedOwner.IdOwner}");
+            }
+
+            if (!string.IsNullOrEmpty(user.PhotoUrl))
+            {
+                try
+                {
+                    await _imageUploadService.DeleteImageAsync(user.PhotoUrl);
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but continue with user deletion
+                    Console.WriteLine($"Warning: Could not delete user photo from Cloudinary: {ex.Message}");
+                }
+            }
+
             await _repository.DeleteAsync(userId);
             return true;
         }
