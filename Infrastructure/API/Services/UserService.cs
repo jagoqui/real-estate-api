@@ -103,29 +103,7 @@ namespace RealEstate.Application.Services
                 throw new ArgumentException("User ID mismatch.");
             }
 
-            var userId = _jwtHelper.GetUserIdFromToken();
-            var userRole = _jwtHelper.GetUserRoleFromToken();
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new UnauthorizedAccessException("Invalid or missing JWT.");
-            }
-
-            var existingUser = await _repository.GetByIdAsync(id);
-
-            if (existingUser == null)
-            {
-                throw new KeyNotFoundException($"User with ID {id} not found.");
-            }
-
-            var isCurrentUser = existingUser.Id == userId;
-
-            var isAdmin = userRole == UserRole.ADMIN.ToString();
-
-            if (!isCurrentUser && !isAdmin)
-            {
-                throw new UnauthorizedAccessException("You do not have permission to update this user.");
-            }
+            var existingUser = await ValidateUserIdPermissionAsync(id);
 
             if (user.PhotoFile != null)
             {
@@ -216,6 +194,26 @@ namespace RealEstate.Application.Services
             var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$";
             if (!System.Text.RegularExpressions.Regex.IsMatch(password, pattern))
                 throw new ArgumentException("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+        }
+
+        private async Task<User> ValidateUserIdPermissionAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User ID cannot be empty.");
+
+            var existingUser = await _repository.GetByIdAsync(userId);
+            if (existingUser == null)
+            {
+                throw new KeyNotFoundException($"User with ID {userId} not found.");
+            }
+
+            var tokenUserId = _jwtHelper.GetUserIdFromToken();
+            var isAdmin = _jwtHelper.GetUserRoleFromToken() == UserRole.ADMIN.ToString();
+
+            if (!isAdmin && tokenUserId != existingUser.Id)
+                throw new UnauthorizedAccessException("You are not authorized to access this resource.");
+
+            return existingUser;
         }
     }
 }
