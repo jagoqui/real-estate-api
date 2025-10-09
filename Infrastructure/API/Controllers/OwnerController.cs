@@ -19,6 +19,17 @@ namespace RealEstate.Infrastructure.API.Controllers
             _ownerService = ownerService;
         }
 
+        [HttpPost]
+        [SwaggerOperation(Summary = "Creates a new owner. Admin role required.")]
+        [ProducesResponseType(typeof(OwnerWithoutOwnerId), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
+        public async Task<IActionResult> CreateOwner([FromBody] OwnerWithoutOwnerId owner)
+        {
+            var createdOwner = await _ownerService.CreateOwnerAsync(owner);
+            return CreatedAtAction(nameof(GetOwnerById), new { id = createdOwner.IdOwner }, createdOwner);
+        }
+
         [HttpGet]
         [SwaggerOperation(Summary = "Retrieves all owners. Admin role required.")]
         [ProducesResponseType(typeof(IEnumerable<Owner>), StatusCodes.Status200OK)]
@@ -47,17 +58,6 @@ namespace RealEstate.Infrastructure.API.Controllers
         {
             var owner = await _ownerService.GetOwnerByUserIdAsync(userId);
             return owner == null ? NotFound() : Ok(owner);
-        }
-
-        [HttpPost]
-        [SwaggerOperation(Summary = "Creates a new owner. Admin role required.")]
-        [ProducesResponseType(typeof(Owner), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize(Roles = nameof(UserRole.ADMIN))]
-        public async Task<IActionResult> CreateOwner([FromBody] OwnerWithoutIds owner)
-        {
-            var createdOwner = await _ownerService.AddOwnerAsync(owner);
-            return CreatedAtAction(nameof(GetOwnerById), new { id = createdOwner.IdOwner }, createdOwner);
         }
 
         [HttpGet("{id}/properties-count")]
