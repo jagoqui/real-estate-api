@@ -283,7 +283,7 @@ namespace RealEstate.Infrastructure.Services
             {
                 var newOwner = new Owner
                 {
-                    UserId = user.Id!,
+                    UserId = user.Id,
                     Name = user.Name ?? string.Empty,
                     Address = string.Empty,
                     Photo = user.PhotoUrl ?? string.Empty,
@@ -292,7 +292,7 @@ namespace RealEstate.Infrastructure.Services
                     Email = user.Email ?? string.Empty,
                 };
 
-                await _ownerRepository.AddOwnerAsync(newOwner);
+                await _ownerRepository.CreateOwnerAsync(newOwner);
             }
             else
             {
