@@ -14,6 +14,12 @@ namespace RealEstate.Infrastructure.API.Repositories
             _users = database.GetCollection<User>("Users");
         }
 
+        public async Task<User> CreateAsync(User user)
+        {
+            await _users.InsertOneAsync(user);
+            return user;
+        }
+
         public async Task<User?> GetByEmailAsync(string email)
         {
             return await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
@@ -27,12 +33,6 @@ namespace RealEstate.Infrastructure.API.Repositories
         public async Task<User?> GetByIdAsync(string id)
         {
             return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task<User> CreateAsync(User user)
-        {
-            await _users.InsertOneAsync(user);
-            return user;
         }
 
         public async Task<User?> UpdateAsync(UserDto user)
@@ -50,6 +50,22 @@ namespace RealEstate.Infrastructure.API.Repositories
 
             await _users.UpdateOneAsync(u => u.Id == user.Id, update);
             return await GetByIdAsync(user.Id);
+        }
+
+        public async Task<User?> RecoverAsync(string userId, string email, string newPasswordHash)
+        {
+            var update = Builders<User>.Update
+                .Set(u => u.PasswordHash, newPasswordHash);
+
+            var filter = Builders<User>.Filter.Eq(u => u.Id, userId) & Builders<User>.Filter.Eq(u => u.Email, email);
+
+            var result = await _users.UpdateOneAsync(filter, update);
+            if (result.ModifiedCount == 0)
+            {
+                return null;
+            }
+
+            return await GetByIdAsync(userId);
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
