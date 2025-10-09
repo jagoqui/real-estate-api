@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RealEstate.API.Controllers
 {
@@ -17,12 +18,10 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] RegisterRequestDto request)
+        [SwaggerOperation(Summary = "Registers a new user with email and password.")]
+        public async Task<ActionResult> Register([FromBody] UserCreateDto request)
         {
-            var result = await _authService.RegisterAsync(
-                request.Email,
-                request.Name,
-                request.Password);
+            var result = await _authService.RegisterAsync(request);
 
             return Ok(new
             {
@@ -33,6 +32,7 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpPost("email-login")]
+        [SwaggerOperation(Summary = "Logs in a user using email and password.")]
         public async Task<ActionResult> EmailLogin([FromBody] LoginRequestDto request)
         {
             var result = await _authService.LoginWithEmailAsync(
@@ -48,6 +48,9 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpPost("google-login")]
+        [SwaggerOperation(Summary = "Logs in a user using Google OAuth2 authorization code.")]
+        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthCodeDto dto)
         {
             if (string.IsNullOrEmpty(dto.Code))
@@ -58,6 +61,7 @@ namespace RealEstate.API.Controllers
         }
 
         [HttpPost("refresh-token")]
+        [SwaggerOperation(Summary = "Refreshes the access token using a valid refresh token.")]
         [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,6 +74,8 @@ namespace RealEstate.API.Controllers
 
         [Authorize]
         [HttpPost("logout")]
+        [SwaggerOperation(Summary = "Logs out the current user by invalidating the refresh token.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Logout()
         {
             await _authService.LogoutAsync();
