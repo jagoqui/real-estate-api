@@ -54,6 +54,18 @@ namespace RealEstate.Infrastructure.API.Services
             return properties.Count();
         }
 
+        public async Task<IEnumerable<Owner>> GetOwnersWithoutUserIdAsync()
+        {
+            try
+            {
+                return await _ownerRepository.GetOwnersWithoutUserIdAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error retrieving owners without user ID.", ex);
+            }
+        }
+
         public async Task<Owner> AddOwnerAsync(OwnerWithoutIds owner)
         {
             if (owner == null)
