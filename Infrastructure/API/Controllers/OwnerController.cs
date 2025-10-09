@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RealEstate.Infrastructure.API.Controllers
 {
@@ -19,6 +20,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet]
+        [SwaggerOperation(Summary = "Retrieves all owners. Admin role required.")]
         [ProducesResponseType(typeof(IEnumerable<Owner>), StatusCodes.Status200OK)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<IActionResult> GetAllOwners()
@@ -28,6 +30,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Retrieves an owner by their ID.")]
         [ProducesResponseType(typeof(Owner), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOwnerById(string id)
@@ -37,6 +40,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [SwaggerOperation(Summary = "Retrieves an owner by their associated user ID.")]
         [ProducesResponseType(typeof(Owner), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOwnerByUserId(string userId)
@@ -46,6 +50,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Creates a new owner. Admin role required.")]
         [ProducesResponseType(typeof(Owner), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
@@ -56,6 +61,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpGet("{id}/properties-count")]
+        [SwaggerOperation(Summary = "Gets the count of properties associated with a specific owner ID.")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPropertiesCountByOwnerId(string id)
@@ -65,6 +71,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Updates an existing owner by their ID.")]
+        [Consumes("application/json")]
         [ProducesResponseType(typeof(Owner), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -75,6 +83,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Deletes an owner by their ID. Admin role required.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
