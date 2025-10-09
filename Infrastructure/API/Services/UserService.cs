@@ -1,6 +1,8 @@
 using RealEstate.Application.Contracts;
 using RealEstate.Application.DTOs;
+using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
 using RealEstate.Infrastructure.Utils;
 
 namespace RealEstate.Application.Services
@@ -16,6 +18,36 @@ namespace RealEstate.Application.Services
             _repository = repository;
             _jwtHelper = jwtHelper;
             _imageUploadService = imageUploadService;
+        }
+
+        public async Task<UserDto> CreateUserAsync(UserCreateDto request)
+        {
+            var existingUser = await _repository.GetByEmailAsync(request.Email);
+            if (existingUser != null)
+            {
+                throw new ArgumentException("A user with this email already exists.");
+            }
+
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            var user = new User
+            {
+                Email = request.Email,
+                Name = request.Name,
+                PasswordHash = passwordHash,
+                Role = UserRole.OWNER,
+            };
+
+            var createdUser = await _repository.CreateAsync(user);
+
+            return new UserDto
+            {
+                Id = createdUser.Id!,
+                Email = createdUser.Email,
+                Name = createdUser.Name,
+                GoogleId = createdUser.GoogleId,
+                Role = createdUser.Role,
+            };
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
@@ -122,6 +154,30 @@ namespace RealEstate.Application.Services
                 PhoneNumber = userUpdateResult.PhoneNumber,
                 Bio = userUpdateResult.Bio,
                 PhotoUrl = userUpdateResult.PhotoUrl,
+            };
+        }
+
+        public async Task<UserDto> RecoverPasswordAsync(RecoverPasswordRequest request)
+        {
+            var (userId, email, newPassword) = (request.UserId, request.Email, request.NewPassword);
+
+            ValidatePassword(newPassword);
+
+            var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+            var user = await _repository.RecoverAsync(userId, email, newPasswordHash);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found or email does not match.");
+            }
+
+            return new UserDto
+            {
+                Id = user.Id!,
+                Email = user.Email,
+                Name = user.Name,
+                GoogleId = user.GoogleId,
+                Role = user.Role,
             };
         }
 
