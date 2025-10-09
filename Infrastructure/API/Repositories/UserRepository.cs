@@ -56,8 +56,21 @@ namespace RealEstate.Infrastructure.API.Repositories
 
         public async Task<IEnumerable<User>> GetUserWithoutOwnersAsync()
         {
-            var owners = await _ownerRepository.GetOwnersAsync();
-            var ownerUserIds = owners.Where(o => !string.IsNullOrEmpty(o.UserId)).Select(o => o.UserId).ToHashSet();
+            var owners = await _ownerRepository.GetOwnersAsync() ?? Enumerable.Empty<object>();
+            var ownerUserIds = owners
+            .Where(o =>
+            {
+                var prop = o.GetType().GetProperty("UserId");
+                var val = prop?.GetValue(o) as string;
+                return !string.IsNullOrEmpty(val);
+            })
+            .Select(o => o.GetType().GetProperty("UserId")!.GetValue(o) as string!)
+            .ToHashSet();
+
+            if (ownerUserIds.Count == 0)
+            {
+                return await _users.Find(_ => true).ToListAsync();
+            }
 
             var filter = Builders<User>.Filter.Nin(u => u.Id, ownerUserIds);
             return await _users.Find(filter).ToListAsync();
