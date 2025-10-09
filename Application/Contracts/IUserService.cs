@@ -1,5 +1,4 @@
 using RealEstate.Application.DTOs;
-using RealEstate.Domain.Entities;
 using RealEstate.Infrastructure.DTOs;
 
 namespace RealEstate.Application.Services
