@@ -10,12 +10,14 @@ namespace RealEstate.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly IOwnerRepository _ownerRepository;
         private readonly JwtHelper _jwtHelper;
         private readonly IImageUploadService _imageUploadService;
 
-        public UserService(IUserRepository repository, JwtHelper jwtHelper, IImageUploadService imageUploadService)
+        public UserService(IUserRepository repository, IOwnerRepository ownerRepository, JwtHelper jwtHelper, IImageUploadService imageUploadService)
         {
             _repository = repository;
+            _ownerRepository = ownerRepository;
             _jwtHelper = jwtHelper;
             _imageUploadService = imageUploadService;
         }
