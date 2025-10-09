@@ -66,6 +66,16 @@ namespace RealEstate.API.Controllers
             }
         }
 
+        [HttpGet("without-owners")]
+        [SwaggerOperation(Summary = "Retrieves users not associated with any owners. Admin role required.")]
+        [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+        [Authorize(Roles = nameof(UserRole.ADMIN))]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsersWithoutOwners()
+        {
+            var users = await _service.GetUsersWithoutOwnersAsync();
+            return Ok(users);
+        }
+
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Updates an existing user by their ID.")]
         [Consumes("multipart/form-data")]
