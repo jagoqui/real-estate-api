@@ -66,7 +66,7 @@ namespace RealEstate.API.Controllers
             }
         }
 
-        [HttpGet("without-owners")]
+        [HttpGet("without-owner")]
         [SwaggerOperation(Summary = "Retrieves users not associated with any owners. Admin role required.")]
         [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
