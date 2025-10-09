@@ -55,9 +55,6 @@ namespace RealEstate.Infrastructure.API.Services
                 Phone = owner.Phone,
                 Email = owner.Email,
             };
-
-            Console.WriteLine($"Creating owner for user ID: {newOwner.UserId}");
-
             try
             {
                 return await _ownerRepository.CreateOwnerAsync(CreateOwnerWithId(newOwner, newOwner.UserId));
