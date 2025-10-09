@@ -76,12 +76,12 @@ namespace RealEstate.Infrastructure.API.Repositories
             return await _users.Find(filter).ToListAsync();
         }
 
-        public async Task<User?> RecoverAsync(string userId, string email, string newPasswordHash)
+        public async Task<User?> ChangePasswordAsync(string userId, string newPasswordHash)
         {
             var update = Builders<User>.Update
                 .Set(u => u.PasswordHash, newPasswordHash);
 
-            var filter = Builders<User>.Filter.Eq(u => u.Id, userId) & Builders<User>.Filter.Eq(u => u.Email, email);
+            var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
 
             var result = await _users.UpdateOneAsync(filter, update);
             if (result.ModifiedCount == 0)

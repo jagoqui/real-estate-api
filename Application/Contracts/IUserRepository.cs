@@ -13,7 +13,7 @@ namespace RealEstate.Application.Contracts
         Task<IEnumerable<User>> GetUserWithoutOwnersAsync();
         Task<User?> UpdateAsync(UserDto user);
 
-        Task<User?> RecoverAsync(string userId, string email, string newPasswordHash);
+        Task<User?> ChangePasswordAsync(string userId, string newPasswordHash);
         Task DeleteAsync(string userId);
 
         // =======================

@@ -87,17 +87,23 @@ namespace RealEstate.API.Controllers
             return updatedUser == null ? NotFound() : Ok(updatedUser);
         }
 
-        [HttpPost("recover")]
-        [SwaggerOperation(Summary = "Recovers a user's password.")]
+        [HttpPost("{id}/change-password")]
+        [SwaggerOperation(Summary = "Changes a user's password.")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
-        public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequest request)
+        public async Task<IActionResult> ChangePasswordAsync([FromRoute] string id, [FromBody] string newPassword)
         {
+            var request = new ChangeUserPasswordRequest
+            {
+                UserId = id,
+                NewPassword = newPassword,
+            };
+
             try
             {
-                var user = await _service.RecoverPasswordAsync(request);
+                var user = await _service.ChangePasswordAsync(request);
                 return Ok(user);
             }
             catch (ArgumentException ex)

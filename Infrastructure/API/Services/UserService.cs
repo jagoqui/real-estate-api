@@ -171,18 +171,20 @@ namespace RealEstate.Application.Services
             };
         }
 
-        public async Task<UserDto> RecoverPasswordAsync(RecoverPasswordRequest request)
+        public async Task<UserDto> ChangePasswordAsync(ChangeUserPasswordRequest request)
         {
-            var (userId, email, newPassword) = (request.UserId, request.Email, request.NewPassword);
+            var (userId, newPassword) = (request.UserId, request.NewPassword);
+
+            await ValidateUserIdPermissionAsync(userId);
 
             ValidatePassword(newPassword);
 
             var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
-            var user = await _repository.RecoverAsync(userId, email, newPasswordHash);
+            var user = await _repository.ChangePasswordAsync(userId, newPasswordHash);
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found or email does not match.");
+                throw new KeyNotFoundException("User not found.");
             }
 
             return new UserDto
