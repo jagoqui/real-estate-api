@@ -27,14 +27,14 @@ namespace RealEstate.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 
-    public class OwnerWithoutId : OwnerWithoutIds
+    public class OwnerWithoutOwnerId : OwnerWithoutIds
     {
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonElement("UserId")]
-        public string? UserId { get; set; } = null!;
+        public string UserId { get; set; } = null!;
     }
 
-    public class Owner : OwnerWithoutId
+    public class Owner : OwnerWithoutOwnerId
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
