@@ -27,6 +27,8 @@ namespace RealEstate.Infrastructure.API.Controllers
         /// <returns>Returns an HTTP response with the URL of the uploaded image.</returns>
         [HttpPost("upload")]
         [SwaggerOperation(Summary = "Uploads an image to Cloudinary.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadImageAsync(
             IFormFile file,
             [FromQuery, DefaultValue("front-assets")] string folderName,
