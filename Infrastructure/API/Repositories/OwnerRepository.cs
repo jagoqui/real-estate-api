@@ -13,6 +13,12 @@ namespace RealEstate.Infrastructure.API.Repositories
             _owners = database.GetCollection<Owner>("Owners");
         }
 
+        public async Task<Owner> CreateOwnerAsync(Owner owner)
+        {
+            await _owners.InsertOneAsync(owner);
+            return owner;
+        }
+
         public async Task<IEnumerable<Owner>> GetOwnersAsync()
         {
             return await _owners.Find(_ => true).ToListAsync();

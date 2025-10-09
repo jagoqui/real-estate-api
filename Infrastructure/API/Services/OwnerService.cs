@@ -19,6 +19,55 @@ namespace RealEstate.Infrastructure.API.Services
             _jwtHelper = jwtHelper ?? throw new ArgumentNullException(nameof(jwtHelper));
         }
 
+        public async Task<Owner> CreateOwnerAsync(OwnerWithoutOwnerId owner)
+        {
+            if (owner == null)
+                throw new BadRequestException("Owner cannot be null.");
+
+            var userId = _jwtHelper.GetUserIdFromToken();
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("Invalid or missing JWT.");
+
+            var isAdmin = _jwtHelper.GetUserRoleFromToken() == UserRole.ADMIN.ToString();
+
+            if (userId != owner.UserId && !isAdmin)
+                throw new UnauthorizedAccessException("You are not authorized to create an owner for another user.");
+
+            var existingOwner = await _ownerRepository.GetOwnerByUserIdAsync(owner.UserId);
+            if (existingOwner != null)
+                throw new BadRequestException($"An owner already exists for User ID {owner.UserId}.");
+
+            var emailOwner = await _ownerRepository.GetOwnersAsync();
+            if (emailOwner.Any(o => o.Email == owner.Email))
+                throw new BadRequestException($"An owner with email {owner.Email} already exists.");
+
+            var alreadyUsedUser = await _ownerRepository.GetOwnerByUserIdAsync(owner.UserId);
+            if (alreadyUsedUser != null)
+                throw new BadRequestException($"The user already has an associated owner {alreadyUsedUser.IdOwner} {owner.UserId}.");
+
+            var newOwner = new OwnerWithoutOwnerId
+            {
+                UserId = owner.UserId,
+                Name = owner.Name,
+                Address = owner.Address,
+                Photo = owner.Photo,
+                Birthday = owner.Birthday,
+                Phone = owner.Phone,
+                Email = owner.Email,
+            };
+
+            Console.WriteLine($"Creating owner for user ID: {newOwner.UserId}");
+
+            try
+            {
+                return await _ownerRepository.CreateOwnerAsync(CreateOwnerWithId(newOwner, newOwner.UserId));
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error adding owner.", ex);
+            }
+        }
+
         public async Task<IEnumerable<Owner>> GetAllOwnersAsync()
         {
             try
