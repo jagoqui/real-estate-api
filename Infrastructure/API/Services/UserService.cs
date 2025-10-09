@@ -192,5 +192,14 @@ namespace RealEstate.Application.Services
             await _repository.DeleteAsync(userId);
             return true;
         }
+
+        private void ValidatePassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Password cannot be empty.");
+            var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(password, pattern))
+                throw new ArgumentException("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+        }
     }
 }
