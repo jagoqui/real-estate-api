@@ -118,16 +118,26 @@ namespace RealEstate.API.Controllers
 
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Deletes a user by their ID. Admin role required.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = nameof(UserRole.ADMIN))]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var success = await _service.DeleteUserAsync(id);
-            if (!success)
+            try
             {
-                return NotFound();
-            }
+                var success = await _service.DeleteUserAsync(id);
+                if (!success)
+                {
+                    return NotFound();
+                }
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
