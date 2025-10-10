@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
 
 namespace RealEstate.Infrastructure.API.Repositories
 {
@@ -40,6 +41,14 @@ namespace RealEstate.Infrastructure.API.Repositories
             return property;
         }
 
+        public async Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status)
+        {
+            var update = Builders<Property>.Update.Set(p => p.Status, status);
+
+            await _properties.UpdateOneAsync(p => p.IdProperty == id, update);
+            return await GetPropertyByIdAsync(id);
+        }
+
         public async Task DeletePropertyAsync(string id)
         {
             await _properties.DeleteOneAsync(p => p.IdProperty == id);
@@ -49,7 +58,8 @@ namespace RealEstate.Infrastructure.API.Repositories
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null)
+            decimal? maxPrice = null,
+            PropertyStatus? status = null)
         {
             var filterBuilder = Builders<Property>.Filter;
             var filter = filterBuilder.Empty;
@@ -72,6 +82,11 @@ namespace RealEstate.Infrastructure.API.Repositories
             if (maxPrice.HasValue)
             {
                 filter &= filterBuilder.Lte(p => p.Price, maxPrice.Value);
+            }
+
+            if (status.HasValue)
+            {
+                filter &= filterBuilder.Eq(p => p.Status, status.Value);
             }
 
             return await _properties.Find(filter).ToListAsync();

@@ -1,5 +1,6 @@
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
 using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services
@@ -85,6 +86,20 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
+        public async Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status)
+        {
+            await EnsurePropertyExistsAsync(id);
+
+            try
+            {
+                return await _propertyRepository.UpdatePropertyStatusAsync(id, status);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException($"Error updating status for property with ID {id}.", ex);
+            }
+        }
+
         public async Task DeletePropertyAsync(string id)
         {
             await EnsurePropertyExistsAsync(id);
@@ -109,11 +124,12 @@ namespace RealEstate.Infrastructure.API.Services
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null)
+            decimal? maxPrice = null,
+            PropertyStatus? status = null)
         {
             try
             {
-                return await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice);
+                return await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status);
             }
             catch (Exception ex)
             {

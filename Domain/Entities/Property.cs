@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using RealEstate.Domain.Enums;
 
 namespace RealEstate.Domain.Entities
 {
@@ -31,6 +32,18 @@ namespace RealEstate.Domain.Entities
 
         [BsonElement("AreaSqm")]
         public int AreaSqm { get; set; }
+
+        [BsonElement("Status")]
+        public PropertyStatus Status { get; set; } = PropertyStatus.AVAILABLE;
+
+        [BsonElement("Features")]
+        public List<string> Features { get; set; } = new List<string>();
+
+        [BsonElement("Featured")]
+        public bool Featured { get; set; } = false;
+
+        [BsonElement("VirtualTourUrl")]
+        public string? VirtualTourUrl { get; set; }
 
         // FK: Owner
         [BsonRepresentation(BsonType.ObjectId)]

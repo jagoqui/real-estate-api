@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RealEstate.Infrastructure.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PropertyController : ControllerBase
+    public class PropertiesController : ControllerBase
     {
         private readonly IPropertyService _propertyService;
 
-        public PropertyController(IPropertyService propertyService)
+        public PropertiesController(IPropertyService propertyService)
         {
             _propertyService = propertyService;
         }
@@ -70,6 +71,20 @@ namespace RealEstate.Infrastructure.API.Controllers
             return Ok(updatedProperty);
         }
 
+        [HttpPatch("{id}/status")]
+        [SwaggerOperation(Summary = "Updates the status of an existing property by its ID.")]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdatePropertyStatus(string id, [FromBody] PropertyStatus status)
+        {
+            var updatedProperty = await _propertyService.UpdatePropertyStatusAsync(id, status);
+            if (updatedProperty == null)
+                return NotFound();
+            return Ok(updatedProperty);
+        }
+
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Deletes a property by its ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -87,9 +102,10 @@ namespace RealEstate.Infrastructure.API.Controllers
             [FromQuery] string? name = null,
             [FromQuery] string? address = null,
             [FromQuery] decimal? minPrice = null,
-            [FromQuery] decimal? maxPrice = null)
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] PropertyStatus? status = null)
         {
-            var properties = await _propertyService.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice);
+            var properties = await _propertyService.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status);
             return Ok(properties);
         }
     }
