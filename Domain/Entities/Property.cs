@@ -4,56 +4,43 @@ using RealEstate.Domain.Enums;
 
 namespace RealEstate.Domain.Entities
 {
-    public class PropertyWithoutId
+    public abstract class PropertyBase
     {
-        [BsonElement("Name")]
         public string Name { get; set; } = null!;
-
-        [BsonElement("Address")]
         public string Address { get; set; } = null!;
-
-        [BsonElement("Price")]
         public decimal Price { get; set; }
-
-        [BsonElement("CodeInternal")]
         public string CodeInternal { get; set; } = null!;
-
-        [BsonElement("Year")]
         public int Year { get; set; }
-
-        [BsonElement("Description")]
         public string Description { get; set; } = null!;
-
-        [BsonElement("Bathrooms")]
         public int Bathrooms { get; set; }
-
-        [BsonElement("Bedrooms")]
         public int Bedrooms { get; set; }
-
-        [BsonElement("AreaSqm")]
         public int AreaSqm { get; set; }
-
-        [BsonElement("Status")]
-        public PropertyStatus Status { get; set; } = PropertyStatus.AVAILABLE;
-
-        [BsonElement("Features")]
-        public List<string> Features { get; set; } = new List<string>();
-
-        [BsonElement("Featured")]
+        public List<string> HighlightedFeatures { get; set; } = new List<string>();
+        public List<string> Amenities { get; set; } = new List<string>();
         public bool Featured { get; set; } = false;
-
-        [BsonElement("VirtualTourUrl")]
-        public string? VirtualTourUrl { get; set; }
-
-        // FK: Owner
-        [BsonRepresentation(BsonType.ObjectId)]
+        public List<string> Images { get; set; } = new List<string>();
+        public List<string> Views360Url { get; set; } = new List<string>();
+        public List<string> City { get; set; } = new List<string>();
+        public List<string> State { get; set; } = new List<string>();
+        public List<string> Country { get; set; } = new List<string>();
+        public Location Location { get; set; } = null!;
         public string IdOwner { get; set; } = null!;
+        public PropertyStatus Status { get; set; } = PropertyStatus.AVAILABLE;
+        public PropertyTypes Type { get; set; } = PropertyTypes.OTHER;
+    }
+
+    public class PropertyWithoutId : PropertyBase
+    {
+        [BsonRepresentation(BsonType.ObjectId)]
+        public new string IdOwner { get; set; } = null!;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class Property : PropertyWithoutId
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string IdProperty { get; set; } = null!;
+        public string Id { get; set; } = null!;
     }
 }
