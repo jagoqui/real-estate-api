@@ -1,7 +1,9 @@
+using RealEstate.Application.Adapters;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
 using RealEstate.Infrastructure.API.Exceptions;
+using RealEstate.Infrastructure.DTOs;
 
 namespace RealEstate.Infrastructure.API.Services
 {
@@ -16,6 +18,23 @@ namespace RealEstate.Infrastructure.API.Services
             _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
             _propertyImageRepository = propertyImageRepository ?? throw new ArgumentNullException(nameof(propertyImageRepository));
             _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
+        }
+
+        public async Task<Property> AddPropertyAsync(PropertyRequestDto propertyRequestDTO)
+        {
+            if (propertyRequestDTO == null)
+                throw new BadRequestException("Property cannot be null.");
+
+            await EnsureOwnerExistsAsync(propertyRequestDTO.IdOwner);
+
+            try
+            {
+                return await _propertyRepository.AddPropertyAsync(CreatePropertyWithId(propertyRequestDTO.ToPropertyWithoutId()));
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error adding property.", ex);
+            }
         }
 
         public async Task<IEnumerable<Property>> GetAllPropertiesAsync()
@@ -47,35 +66,18 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<Property> AddPropertyAsync(PropertyWithoutId property)
+        public async Task<Property> UpdatePropertyAsync(string id, PropertyRequestDto propertyRequestDTO)
         {
-            if (property == null)
-                throw new BadRequestException("Property cannot be null.");
-
-            await EnsureOwnerExistsAsync(property.IdOwner);
-
-            try
-            {
-                return await _propertyRepository.AddPropertyAsync(CreatePropertyWithId(property));
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerErrorException("Error adding property.", ex);
-            }
-        }
-
-        public async Task<Property> UpdatePropertyAsync(string id, PropertyWithoutId property)
-        {
-            if (property == null)
+            if (propertyRequestDTO == null)
                 throw new BadRequestException("Property cannot be null.");
 
             Property existingProperty = await EnsurePropertyExistsAsync(id);
 
-            await EnsureOwnerExistsAsync(property.IdOwner);
+            await EnsureOwnerExistsAsync(propertyRequestDTO.IdOwner);
 
             try
             {
-                await _propertyRepository.UpdatePropertyAsync(existingProperty.IdProperty, CreatePropertyWithId(property, existingProperty.IdProperty));
+                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, CreatePropertyWithId(propertyRequestDTO.ToPropertyWithoutId(), existingProperty.Id));
 
                 return await _propertyRepository.GetPropertyByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated property.");
@@ -125,11 +127,12 @@ namespace RealEstate.Infrastructure.API.Services
             string? address = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
-            PropertyStatus? status = null)
+            PropertyStatus? status = null,
+            PropertyTypes? type = null)
         {
             try
             {
-                return await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status);
+                return await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status, type);
             }
             catch (Exception ex)
             {
@@ -153,7 +156,7 @@ namespace RealEstate.Infrastructure.API.Services
         {
             return id != null ? new Property
             {
-                IdProperty = id,
+                Id = id,
                 Name = property.Name,
                 Address = property.Address,
                 Price = property.Price,
