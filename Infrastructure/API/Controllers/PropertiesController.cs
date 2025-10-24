@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RealEstate.Infrastructure.API.Controllers
@@ -51,10 +52,10 @@ namespace RealEstate.Infrastructure.API.Controllers
         [SwaggerOperation(Summary = "Creates a new property.")]
         [ProducesResponseType(typeof(Property), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateProperty([FromBody] PropertyWithoutId property)
+        public async Task<IActionResult> CreateProperty([FromBody] PropertyRequestDto propertyRequestDTO)
         {
-            var createdProperty = await _propertyService.AddPropertyAsync(property);
-            return CreatedAtAction(nameof(GetPropertyById), new { id = createdProperty.IdProperty }, createdProperty);
+            var createdProperty = await _propertyService.AddPropertyAsync(propertyRequestDTO);
+            return CreatedAtAction(nameof(GetPropertyById), new { id = createdProperty.Id }, createdProperty);
         }
 
         [HttpPut("{id}")]
@@ -63,9 +64,9 @@ namespace RealEstate.Infrastructure.API.Controllers
         [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateProperty(string id, [FromBody] PropertyWithoutId property)
+        public async Task<IActionResult> UpdateProperty(string id, [FromBody] PropertyRequestDto propertyRequestDTO)
         {
-            var updatedProperty = await _propertyService.UpdatePropertyAsync(id, property);
+            var updatedProperty = await _propertyService.UpdatePropertyAsync(id, propertyRequestDTO);
             if (updatedProperty == null)
                 return NotFound();
             return Ok(updatedProperty);
