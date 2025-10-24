@@ -95,6 +95,24 @@ namespace RealEstate.Infrastructure.API.Controllers
             return NoContent();
         }
 
+        [HttpGet("types")]
+        [SwaggerOperation(Summary = "Retrieves all valid property types.")]
+        [ProducesResponseType(typeof(IEnumerable<PropertyTypes>), StatusCodes.Status200OK)]
+        public IActionResult GetValidPropertyTypes()
+        {
+            var types = Enum.GetNames(typeof(PropertyTypes));
+            return Ok(types);
+        }
+
+        [HttpGet("statuses")]
+        [SwaggerOperation(Summary = "Retrieves all valid property statuses.")]
+        [ProducesResponseType(typeof(IEnumerable<PropertyStatus>), StatusCodes.Status200OK)]
+        public IActionResult GetValidPropertyStatuses()
+        {
+            var statuses = Enum.GetNames(typeof(PropertyStatus));
+            return Ok(statuses);
+        }
+
         [HttpGet("filter")]
         [SwaggerOperation(Summary = "Retrieves properties based on optional filters: name, address, minPrice, maxPrice.")]
         [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
