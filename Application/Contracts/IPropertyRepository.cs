@@ -17,6 +17,7 @@ namespace RealEstate.Application.Contracts
             string? address = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
-            PropertyStatus? status = null);
+            PropertyStatus? status = null,
+            PropertyTypes? type = null);
     }
 }
