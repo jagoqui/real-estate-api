@@ -1,11 +1,11 @@
+using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
+
 namespace RealEstate.Infrastructure.DTOs
 {
-    public class PropertyRequestDto
+    public class PropertyRequestDto : PropertyBase
     {
-        public string IdOwner { get; set; } = null!;
-        public string Name { get; set; } = null!;
-        public string Address { get; set; } = null!;
-        public decimal Price { get; set; }
-        public string ImageUrl { get; set; } = null!;
+        public new string Status { get; set; } = nameof(PropertyStatus.AVAILABLE);
+        public new string Type { get; set; } = nameof(PropertyTypes.OTHER);
     }
 }
