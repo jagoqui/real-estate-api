@@ -4,6 +4,11 @@ using RealEstate.Infrastructure.API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // =======================
+// MongoDB Conventions
+// =======================
+MongoDbConventions.RegisterCamelCaseConvention();
+
+// =======================
 // Load environment variables
 // =======================
 builder.LoadEnvironment();
