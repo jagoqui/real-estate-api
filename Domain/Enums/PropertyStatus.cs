@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace RealEstate.Domain.Enums
 {
     public enum PropertyStatus
