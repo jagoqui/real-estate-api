@@ -121,9 +121,10 @@ namespace RealEstate.Infrastructure.API.Controllers
             [FromQuery] string? address = null,
             [FromQuery] decimal? minPrice = null,
             [FromQuery] decimal? maxPrice = null,
-            [FromQuery] PropertyStatus? status = null)
+            [FromQuery] PropertyStatus? status = null,
+            [FromQuery] PropertyTypes? type = null)
         {
-            var properties = await _propertyService.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status);
+            var properties = await _propertyService.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status, type);
             return Ok(properties);
         }
     }
