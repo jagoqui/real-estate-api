@@ -9,8 +9,8 @@ namespace RealEstate.Application.Contracts
         Task<IEnumerable<Property>> GetAllPropertiesAsync();
         Task<Property?> GetPropertyByIdAsync(string id);
         Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId);
-        Task<Property> AddPropertyAsync(PropertyWithoutId property);
-        Task<Property> UpdatePropertyAsync(string id, PropertyWithoutId property);
+        Task<Property> AddPropertyAsync(PropertyRequestDto propertyRequestDto);
+        Task<Property> UpdatePropertyAsync(string id, PropertyRequestDto property);
         Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status);
         Task DeletePropertyAsync(string id);
         Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
