@@ -29,7 +29,7 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                return await _propertyRepository.AddPropertyAsync(CreatePropertyWithId(propertyRequestDTO.ToPropertyWithoutId()));
+                return await _propertyRepository.AddPropertyAsync(CreatePropertyWithId(propertyRequestDTO.ToProperty()));
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, CreatePropertyWithId(propertyRequestDTO.ToPropertyWithoutId(), existingProperty.Id));
+                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, CreatePropertyWithId(propertyRequestDTO.ToProperty(), existingProperty.Id));
 
                 return await _propertyRepository.GetPropertyByIdAsync(id)
                        ?? throw new InternalServerErrorException("Failed to retrieve the updated property.");
@@ -152,7 +152,7 @@ namespace RealEstate.Infrastructure.API.Services
             return property;
         }
 
-        private Property CreatePropertyWithId(PropertyWithoutId property, string? id = null)
+        private Property CreatePropertyWithId(Property property, string? id = null)
         {
             return id != null ? new Property
             {
