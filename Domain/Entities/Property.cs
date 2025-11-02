@@ -24,23 +24,18 @@ namespace RealEstate.Domain.Entities
         public List<string> State { get; set; } = new List<string>();
         public List<string> Country { get; set; } = new List<string>();
         public Location Location { get; set; } = null!;
+        [BsonRepresentation(BsonType.ObjectId)]
         public string IdOwner { get; set; } = null!;
         public PropertyStatus Status { get; set; } = PropertyStatus.AVAILABLE;
         public PropertyTypes Type { get; set; } = PropertyTypes.OTHER;
     }
 
-    public class PropertyWithoutId : PropertyBase
-    {
-        [BsonRepresentation(BsonType.ObjectId)]
-        public new string IdOwner { get; set; } = null!;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    }
-
-    public class Property : PropertyWithoutId
+    public class Property : PropertyBase
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = null!;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }
