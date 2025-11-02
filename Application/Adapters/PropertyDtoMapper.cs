@@ -6,9 +6,9 @@ namespace RealEstate.Application.Adapters
 
     public static class PropertyDtoMapper
     {
-        public static PropertyWithoutId ToPropertyWithoutId(this PropertyRequestDto dto)
+        public static Property ToProperty(this PropertyRequestDto dto)
         {
-            return new PropertyWithoutId
+            return new Property
             {
                 Name = dto.Name,
                 Address = dto.Address,
