@@ -1,4 +1,6 @@
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using RealEstate.Domain.Entities;
 
 namespace RealEstate.Infrastructure.API.Conventions
 {
@@ -13,12 +15,37 @@ namespace RealEstate.Infrastructure.API.Conventions
             var pack = new ConventionPack
             {
                 new CamelCaseElementNameConvention(),
+                new IgnoreExtraElementsConvention(true), // Ignora campos extra en MongoDB
             };
 
             ConventionRegistry.Register(
                 "CamelCaseConventionPack",
                 pack,
                 t => true);
+        }
+
+        /// <summary>
+        /// Registers the class maps for entities with inheritance.
+        /// </summary>
+        public static void RegisterClassMaps()
+        {
+            // Solo registrar si no está ya registrado
+            if (!BsonClassMap.IsClassMapRegistered(typeof(PropertyBase)))
+            {
+                BsonClassMap.RegisterClassMap<PropertyBase>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetIsRootClass(true);
+                });
+            }
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(Property)))
+            {
+                BsonClassMap.RegisterClassMap<Property>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
         }
     }
 }
