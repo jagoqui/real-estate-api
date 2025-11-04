@@ -6,9 +6,9 @@ namespace RealEstate.Application.Adapters
 
     public static class PropertyDtoMapper
     {
-        public static Property ToProperty(this PropertyRequestDto dto)
+        public static Property ToProperty(this PropertyRequestDto dto, List<string> imagesUrl, string? id = null)
         {
-            return new Property
+            var property = new Property
             {
                 Name = dto.Name,
                 Address = dto.Address,
@@ -22,7 +22,7 @@ namespace RealEstate.Application.Adapters
                 HighlightedFeatures = dto.HighlightedFeatures,
                 Amenities = dto.Amenities,
                 Featured = dto.Featured,
-                Images = dto.Images,
+                Images = imagesUrl,
                 Views360Url = dto.Views360Url,
                 City = dto.City,
                 State = dto.State,
@@ -33,6 +33,13 @@ namespace RealEstate.Application.Adapters
                 Type = Enum.TryParse<PropertyTypes>(dto.Type, out var type) ? type : PropertyTypes.OTHER,
                 UpdatedAt = DateTime.UtcNow,
             };
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                property.Id = id;
+            }
+
+            return property;
         }
     }
 }
