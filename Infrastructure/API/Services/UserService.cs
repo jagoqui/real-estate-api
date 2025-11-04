@@ -112,17 +112,7 @@ namespace RealEstate.Application.Services
 
             if (user.PhotoFile != null)
             {
-                var imageUrl = await _imageUploadService.UploadImageAsync(user.PhotoFile, "users");
-
-                if (!string.IsNullOrEmpty(imageUrl))
-                {
-                    user.PhotoUrl = imageUrl;
-                }
-
-                if (!string.IsNullOrEmpty(existingUser.PhotoUrl))
-                {
-                    await _imageUploadService.DeleteImageAsync(existingUser.PhotoUrl);
-                }
+                user.PhotoUrl = await _imageUploadService.UploadImageAsync(user.PhotoFile, "users", existingUser.PhotoUrl);
             }
 
             var userUpdateResult = await _repository.UpdateAsync(new UserDto
