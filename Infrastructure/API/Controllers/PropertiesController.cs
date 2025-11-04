@@ -58,16 +58,6 @@ namespace RealEstate.Infrastructure.API.Controllers
             return Ok(properties);
         }
 
-        [HttpPost]
-        [SwaggerOperation(Summary = "Creates a new property.")]
-        [ProducesResponseType(typeof(Property), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateProperty([FromBody] PropertyRequestDto propertyRequestDTO)
-        {
-            var createdProperty = await _propertyService.AddPropertyAsync(propertyRequestDTO);
-            return CreatedAtAction(nameof(GetPropertyById), new { id = createdProperty.Id }, createdProperty);
-        }
-
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Updates an existing property by its ID.")]
         [Consumes("application/json")]
