@@ -29,7 +29,6 @@ namespace RealEstate.Infrastructure.API.Conventions
         /// </summary>
         public static void RegisterClassMaps()
         {
-            // Solo registrar si no está ya registrado
             if (!BsonClassMap.IsClassMapRegistered(typeof(PropertyBase)))
             {
                 BsonClassMap.RegisterClassMap<PropertyBase>(cm =>
