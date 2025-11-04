@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // MongoDB Conventions
 // =======================
 MongoDbConventions.RegisterCamelCaseConvention();
+MongoDbConventions.RegisterClassMaps();
 
 // =======================
 // Load environment variables
