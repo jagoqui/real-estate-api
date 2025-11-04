@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using RealEstate.Application.Adapters;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
@@ -13,11 +14,14 @@ namespace RealEstate.Infrastructure.API.Services
         private readonly IPropertyImageRepository _propertyImageRepository;
         private readonly IOwnerRepository _ownerRepository;
 
-        public PropertyService(IPropertyRepository propertyRepository, IPropertyImageRepository propertyImageRepository, IOwnerRepository ownerRepository)
+        private readonly IImageUploadService _imageUploadService;
+
+        public PropertyService(IPropertyRepository propertyRepository, IPropertyImageRepository propertyImageRepository, IOwnerRepository ownerRepository, IImageUploadService imageUploadService)
         {
             _propertyRepository = propertyRepository ?? throw new ArgumentNullException(nameof(propertyRepository));
             _propertyImageRepository = propertyImageRepository ?? throw new ArgumentNullException(nameof(propertyImageRepository));
             _ownerRepository = ownerRepository ?? throw new ArgumentNullException(nameof(ownerRepository));
+            _imageUploadService = imageUploadService ?? throw new ArgumentNullException(nameof(imageUploadService));
         }
 
         public async Task<Property> AddPropertyAsync(PropertyRequestDto propertyRequestDTO)
@@ -29,7 +33,8 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                return await _propertyRepository.AddPropertyAsync(CreatePropertyWithId(propertyRequestDTO.ToProperty()));
+                var imageUrls = await LoadPropertyImages(propertyRequestDTO);
+                return await _propertyRepository.AddPropertyAsync(propertyRequestDTO.ToProperty(imageUrls));
             }
             catch (Exception ex)
             {
@@ -45,13 +50,20 @@ namespace RealEstate.Infrastructure.API.Services
             }
             catch (Exception ex)
             {
-                throw new InternalServerErrorException("Error retrieving properties.", ex);
+                throw new InternalServerErrorException($"Error retrieving properties: {ex.Message}", ex);
             }
         }
 
         public async Task<Property?> GetPropertyByIdAsync(string id)
         {
-            return await EnsurePropertyExistsAsync(id);
+            try
+            {
+                return await _propertyRepository.GetPropertyByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException($"Error retrieving property with ID {id}.", ex);
+            }
         }
 
         public async Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId)
@@ -77,10 +89,18 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, CreatePropertyWithId(propertyRequestDTO.ToProperty(), existingProperty.Id));
+                var imageUrls = await LoadPropertyImages(propertyRequestDTO);
 
-                return await _propertyRepository.GetPropertyByIdAsync(id)
-                       ?? throw new InternalServerErrorException("Failed to retrieve the updated property.");
+                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, propertyRequestDTO.ToProperty(imageUrls, existingProperty.Id));
+
+                var propertyUpdated = await _propertyRepository.GetPropertyByIdAsync(id);
+
+                if (propertyUpdated == null)
+                    throw new InternalServerErrorException("Failed to retrieve the updated property.");
+
+                await _imageUploadService.DeleteImagesAsync(existingProperty.Images);
+
+                return propertyUpdated;
             }
             catch (Exception ex)
             {
@@ -183,6 +203,19 @@ namespace RealEstate.Infrastructure.API.Services
             var owner = await _ownerRepository.GetOwnerByIdAsync(ownerId);
             if (owner == null)
                 throw new BadRequestException($"No owner found with ID {ownerId}.");
+        }
+
+        private async Task<List<string>> LoadPropertyImages(PropertyRequestDto propertyRequestDTO)
+        {
+            List<string> uploadedImageUrls = new List<string>();
+
+            foreach (var image in propertyRequestDTO.Images)
+            {
+                var imageUrl = await _imageUploadService.UploadImageAsync(image, "properties");
+                uploadedImageUrls.Add(imageUrl);
+            }
+
+            return uploadedImageUrls;
         }
     }
 }
