@@ -172,29 +172,6 @@ namespace RealEstate.Infrastructure.API.Services
             return property;
         }
 
-        private Property CreatePropertyWithId(Property property, string? id = null)
-        {
-            return id != null ? new Property
-            {
-                Id = id,
-                Name = property.Name,
-                Address = property.Address,
-                Price = property.Price,
-                CodeInternal = property.CodeInternal,
-                Year = property.Year,
-                IdOwner = property.IdOwner,
-            }
-            : new Property
-            {
-                Name = property.Name,
-                Address = property.Address,
-                Price = property.Price,
-                CodeInternal = property.CodeInternal,
-                Year = property.Year,
-                IdOwner = property.IdOwner,
-            };
-        }
-
         private async Task EnsureOwnerExistsAsync(string ownerId)
         {
             if (string.IsNullOrWhiteSpace(ownerId))
