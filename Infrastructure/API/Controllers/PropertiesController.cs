@@ -18,6 +18,16 @@ namespace RealEstate.Infrastructure.API.Controllers
             _propertyService = propertyService;
         }
 
+        [HttpPost]
+        [SwaggerOperation(Summary = "Creates a new property.")]
+        [ProducesResponseType(typeof(Property), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateProperty([FromBody] PropertyRequestDto propertyRequestDTO)
+        {
+            var createdProperty = await _propertyService.AddPropertyAsync(propertyRequestDTO);
+            return CreatedAtAction(nameof(GetPropertyById), new { id = createdProperty.Id }, createdProperty);
+        }
+
         [HttpGet]
         [SwaggerOperation(Summary = "Retrieves all properties.")]
         [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
