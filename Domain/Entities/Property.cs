@@ -16,13 +16,13 @@ namespace RealEstate.Domain.Entities
         public int Bedrooms { get; set; }
         public int AreaSqm { get; set; }
         public List<string> HighlightedFeatures { get; set; } = new List<string>();
-        public List<string> Amenities { get; set; } = new List<string>();
+        public List<Amenity> Amenities { get; set; } = new List<Amenity>();
         public bool Featured { get; set; } = false;
         public List<string> Images { get; set; } = new List<string>();
         public List<string> Views360Url { get; set; } = new List<string>();
-        public List<string> City { get; set; } = new List<string>();
-        public List<string> State { get; set; } = new List<string>();
-        public List<string> Country { get; set; } = new List<string>();
+        public string City { get; set; } = null!;
+        public string State { get; set; } = null!;
+        public string Country { get; set; } = null!;
         public Location Location { get; set; } = null!;
         [BsonRepresentation(BsonType.ObjectId)]
         public string IdOwner { get; set; } = null!;
