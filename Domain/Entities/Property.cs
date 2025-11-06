@@ -9,7 +9,6 @@ namespace RealEstate.Domain.Entities
         public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
         public decimal Price { get; set; }
-        public string CodeInternal { get; set; } = null!;
         public int Year { get; set; }
         public string Description { get; set; } = null!;
         public int Bathrooms { get; set; }
@@ -35,6 +34,7 @@ namespace RealEstate.Domain.Entities
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = null!;
+        public string CodeInternal { get; set; } = null!;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
