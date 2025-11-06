@@ -13,7 +13,6 @@ namespace RealEstate.Application.Adapters
                 Name = dto.Name,
                 Address = dto.Address,
                 Price = dto.Price,
-                CodeInternal = dto.CodeInternal,
                 Year = dto.Year,
                 Description = dto.Description,
                 Bathrooms = dto.Bathrooms,
@@ -40,6 +39,36 @@ namespace RealEstate.Application.Adapters
             }
 
             return property;
+        }
+
+        public static PropertyResponseDto ToPropertyResponseDto(this Property property)
+        {
+            return new PropertyResponseDto
+            {
+                Id = property.Id,
+                Name = property.Name,
+                Address = property.Address,
+                Price = property.Price,
+                Year = property.Year,
+                Description = property.Description,
+                Bathrooms = property.Bathrooms,
+                Bedrooms = property.Bedrooms,
+                AreaSqm = property.AreaSqm,
+                HighlightedFeatures = property.HighlightedFeatures,
+                Amenities = property.Amenities,
+                Featured = property.Featured,
+                Images = property.Images,
+                Views360Url = property.Views360Url,
+                City = property.City,
+                State = property.State,
+                Country = property.Country,
+                Location = property.Location,
+                IdOwner = property.IdOwner,
+                Status = property.Status.ToString(),
+                Type = property.Type.ToString(),
+                CreatedAt = property.CreatedAt,
+                UpdatedAt = property.UpdatedAt,
+            };
         }
     }
 }
