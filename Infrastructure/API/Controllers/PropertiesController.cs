@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Contracts;
-using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
 using RealEstate.Infrastructure.DTOs;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,9 +19,9 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Creates a new property.")]
-        [ProducesResponseType(typeof(Property), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateProperty([FromBody] PropertyRequestDto propertyRequestDTO)
+        public async Task<IActionResult> CreateProperty([FromForm] PropertyRequestDto propertyRequestDTO)
         {
             var createdProperty = await _propertyService.AddPropertyAsync(propertyRequestDTO);
             return CreatedAtAction(nameof(GetPropertyById), new { id = createdProperty.Id }, createdProperty);
@@ -30,7 +29,7 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Retrieves all properties.")]
-        [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<PropertyResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllProperties()
         {
             var properties = await _propertyService.GetAllPropertiesAsync();
@@ -39,7 +38,7 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Retrieves a property by its ID.")]
-        [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPropertyById(string id)
         {
@@ -51,7 +50,7 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpGet("owner/{ownerId}")]
         [SwaggerOperation(Summary = "Retrieves all properties associated with a specific owner ID.")]
-        [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<PropertyResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPropertiesByOwnerId(string ownerId)
         {
             var properties = await _propertyService.GetPropertiesByOwnerIdAsync(ownerId);
@@ -61,7 +60,7 @@ namespace RealEstate.Infrastructure.API.Controllers
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Updates an existing property by its ID.")]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateProperty(string id, [FromBody] PropertyRequestDto propertyRequestDTO)
@@ -75,10 +74,10 @@ namespace RealEstate.Infrastructure.API.Controllers
         [HttpPatch("{id}/status")]
         [SwaggerOperation(Summary = "Updates the status of an existing property by its ID.")]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(Property), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdatePropertyStatus(string id, [FromBody] PropertyStatus status)
+        public async Task<IActionResult> UpdatePropertyStatus(string id, [FromBody] string status)
         {
             var updatedProperty = await _propertyService.UpdatePropertyStatusAsync(id, status);
             if (updatedProperty == null)
@@ -116,7 +115,7 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpGet("filter")]
         [SwaggerOperation(Summary = "Retrieves properties based on optional filters: name, address, minPrice, maxPrice.")]
-        [ProducesResponseType(typeof(IEnumerable<Property>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<PropertyResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPropertiesByFilter(
             [FromQuery] string? name = null,
             [FromQuery] string? address = null,
