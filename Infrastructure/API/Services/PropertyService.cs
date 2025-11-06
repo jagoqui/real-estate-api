@@ -24,7 +24,7 @@ namespace RealEstate.Infrastructure.API.Services
             _imageUploadService = imageUploadService ?? throw new ArgumentNullException(nameof(imageUploadService));
         }
 
-        public async Task<Property> AddPropertyAsync(PropertyRequestDto propertyRequestDTO)
+        public async Task<PropertyResponseDto> AddPropertyAsync(PropertyRequestDto propertyRequestDTO)
         {
             if (propertyRequestDTO == null)
                 throw new BadRequestException("Property cannot be null.");
@@ -34,7 +34,8 @@ namespace RealEstate.Infrastructure.API.Services
             try
             {
                 var imageUrls = await LoadPropertyImages(propertyRequestDTO);
-                return await _propertyRepository.AddPropertyAsync(propertyRequestDTO.ToProperty(imageUrls));
+                Console.WriteLine("Image URLs: " + string.Join(", ", imageUrls));
+                return (await _propertyRepository.AddPropertyAsync(propertyRequestDTO.ToProperty(imageUrls))).ToPropertyResponseDto();
             }
             catch (Exception ex)
             {
@@ -42,11 +43,11 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<IEnumerable<Property>> GetAllPropertiesAsync()
+        public async Task<IEnumerable<PropertyResponseDto>> GetAllPropertiesAsync()
         {
             try
             {
-                return await _propertyRepository.GetPropertiesAsync();
+                return (await _propertyRepository.GetPropertiesAsync()).Select(p => p.ToPropertyResponseDto());
             }
             catch (Exception ex)
             {
@@ -54,11 +55,12 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<Property?> GetPropertyByIdAsync(string id)
+        public async Task<PropertyResponseDto?> GetPropertyByIdAsync(string id)
         {
             try
             {
-                return await _propertyRepository.GetPropertyByIdAsync(id);
+                var property = await _propertyRepository.GetPropertyByIdAsync(id);
+                return property?.ToPropertyResponseDto();
             }
             catch (Exception ex)
             {
@@ -66,11 +68,11 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId)
+        public async Task<IEnumerable<PropertyResponseDto>> GetPropertiesByOwnerIdAsync(string ownerId)
         {
             try
             {
-                return await _propertyRepository.GetPropertiesByOwnerIdAsync(ownerId);
+                return (await _propertyRepository.GetPropertiesByOwnerIdAsync(ownerId)).Select(p => p.ToPropertyResponseDto());
             }
             catch (Exception ex)
             {
@@ -78,7 +80,7 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<Property> UpdatePropertyAsync(string id, PropertyRequestDto propertyRequestDTO)
+        public async Task<PropertyResponseDto> UpdatePropertyAsync(string id, PropertyRequestDto propertyRequestDTO)
         {
             if (propertyRequestDTO == null)
                 throw new BadRequestException("Property cannot be null.");
@@ -100,7 +102,7 @@ namespace RealEstate.Infrastructure.API.Services
 
                 await _imageUploadService.DeleteImagesAsync(existingProperty.Images);
 
-                return propertyUpdated;
+                return propertyUpdated.ToPropertyResponseDto();
             }
             catch (Exception ex)
             {
@@ -108,13 +110,14 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status)
+        public async Task<PropertyResponseDto?> UpdatePropertyStatusAsync(string id, string status)
         {
             await EnsurePropertyExistsAsync(id);
 
             try
             {
-                return await _propertyRepository.UpdatePropertyStatusAsync(id, status);
+                var statusParsed = Enum.TryParse<PropertyStatus>(status, out var parsedStatus) ? parsedStatus : PropertyStatus.AVAILABLE;
+                return (await _propertyRepository.UpdatePropertyStatusAsync(id, statusParsed))?.ToPropertyResponseDto();
             }
             catch (Exception ex)
             {
@@ -142,7 +145,7 @@ namespace RealEstate.Infrastructure.API.Services
             }
         }
 
-        public async Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
+        public async Task<IEnumerable<PropertyResponseDto>> GetPropertiesByFilterAsync(
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
@@ -152,7 +155,7 @@ namespace RealEstate.Infrastructure.API.Services
         {
             try
             {
-                return await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status, type);
+                return (await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status, type)).Select(p => p.ToPropertyResponseDto());
             }
             catch (Exception ex)
             {
