@@ -2,8 +2,10 @@ namespace RealEstate.Domain.Entities
 {
     public class Location
     {
-        public double Lat { get; set; }
+        public string Lat { get; set; } = null!;
 
-        public double Lon { get; set; }
+        public string Lon { get; set; } = null!;
+
+        public string DisplayName { get; set; } = null!;
     }
 }
