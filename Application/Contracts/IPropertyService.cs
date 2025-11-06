@@ -6,14 +6,14 @@ namespace RealEstate.Application.Contracts
 {
     public interface IPropertyService
     {
-        Task<IEnumerable<Property>> GetAllPropertiesAsync();
-        Task<Property?> GetPropertyByIdAsync(string id);
-        Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId);
-        Task<Property> AddPropertyAsync(PropertyRequestDto propertyRequestDto);
-        Task<Property> UpdatePropertyAsync(string id, PropertyRequestDto property);
-        Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status);
+        Task<IEnumerable<PropertyResponseDto>> GetAllPropertiesAsync();
+        Task<PropertyResponseDto?> GetPropertyByIdAsync(string id);
+        Task<IEnumerable<PropertyResponseDto>> GetPropertiesByOwnerIdAsync(string ownerId);
+        Task<PropertyResponseDto> AddPropertyAsync(PropertyRequestDto propertyRequestDto);
+        Task<PropertyResponseDto> UpdatePropertyAsync(string id, PropertyRequestDto property);
+        Task<PropertyResponseDto?> UpdatePropertyStatusAsync(string id, string status);
         Task DeletePropertyAsync(string id);
-        Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
+        Task<IEnumerable<PropertyResponseDto>> GetPropertiesByFilterAsync(
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
