@@ -6,7 +6,7 @@ namespace RealEstate.Application.Adapters
 
     public static class PropertyDtoMapper
     {
-        public static Property ToProperty(this PropertyRequestDto dto, List<string> imagesUrl, string? id = null)
+        public static Property ToProperty(this PropertyRequestDto dto, List<string> imagesUrl, string? coverImageUrl = null, string? id = null)
         {
             var property = new Property
             {
@@ -27,6 +27,7 @@ namespace RealEstate.Application.Adapters
                 }).ToList(),
                 Featured = dto.Featured,
                 Images = imagesUrl,
+                CoverImage = coverImageUrl,
                 Views360Url = dto.Views360Url,
                 City = dto.City,
                 State = dto.State,
@@ -68,6 +69,7 @@ namespace RealEstate.Application.Adapters
                 }).ToList(),
                 Featured = property.Featured,
                 Images = property.Images,
+                CoverImage = property.CoverImage,
                 Views360Url = property.Views360Url,
                 City = property.City,
                 State = property.State,
