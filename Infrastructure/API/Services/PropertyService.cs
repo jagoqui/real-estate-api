@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using RealEstate.Application.Adapters;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
