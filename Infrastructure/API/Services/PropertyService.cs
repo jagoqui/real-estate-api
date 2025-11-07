@@ -89,16 +89,47 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                var imageUrls = await LoadPropertyImages(propertyRequestDTO);
+                var existingImageNames = existingProperty.Images
+                    .Select(url => GetFileNameFromUrl(url))
+                    .Where(name => !string.IsNullOrEmpty(name))
+                    .ToHashSet();
 
-                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, propertyRequestDTO.ToProperty(imageUrls, existingProperty.Id));
+                var newFileNames = propertyRequestDTO.Images?
+                    .Where(img => img != null && img.Length > 0)
+                    .Select(img => img.FileName)
+                    .ToHashSet() ?? new HashSet<string>();
+
+                var imagesToDelete = existingProperty.Images
+                    .Where(url =>
+                    {
+                        var fileName = GetFileNameFromUrl(url);
+                        return !string.IsNullOrEmpty(fileName) && !newFileNames.Contains(fileName);
+                    })
+                    .ToList();
+
+                var filesToUpload = propertyRequestDTO.Images?
+                    .Where(img => img != null && img.Length > 0 && !existingImageNames.Contains(img.FileName))
+                    .ToList() ?? new List<IFormFile>();
+
+                var newImageUrls = await UploadNewImages(filesToUpload, propertyRequestDTO.IdOwner);
+
+                var imagesToKeep = existingProperty.Images
+                    .Where(url => !imagesToDelete.Contains(url))
+                    .ToList();
+
+                var finalImageUrls = imagesToKeep.Concat(newImageUrls).ToList();
+
+                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, propertyRequestDTO.ToProperty(finalImageUrls, existingProperty.Id));
 
                 var propertyUpdated = await _propertyRepository.GetPropertyByIdAsync(id);
 
                 if (propertyUpdated == null)
                     throw new InternalServerErrorException("Failed to retrieve the updated property.");
 
-                await _imageUploadService.DeleteImagesAsync(existingProperty.Images);
+                if (imagesToDelete.Any())
+                {
+                    await _imageUploadService.DeleteImagesAsync(imagesToDelete);
+                }
 
                 return propertyUpdated.ToPropertyResponseDto();
             }
@@ -216,6 +247,59 @@ namespace RealEstate.Infrastructure.API.Services
             }
 
             return uploadedImageUrls;
+        }
+
+        private async Task<List<string>> UploadNewImages(List<IFormFile> files, string ownerId)
+        {
+            List<string> uploadedImageUrls = new List<string>();
+
+            if (files == null || !files.Any())
+            {
+                return uploadedImageUrls;
+            }
+
+            try
+            {
+                foreach (var file in files)
+                {
+                    if (file == null || file.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    Console.WriteLine($"📤 Uploading new image: {file.FileName} ({file.Length} bytes)");
+                    var imageUrl = await _imageUploadService.UploadImageAsync(file, $"properties/{ownerId}");
+                    uploadedImageUrls.Add(imageUrl);
+                    Console.WriteLine($"✅ Uploaded: {imageUrl}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException($"Error uploading new images: {ex.Message}", ex);
+            }
+
+            return uploadedImageUrls;
+        }
+
+        private string GetFileNameFromUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                // Extraer la última parte de la URL después del último '/'
+                // Ejemplo: https://res.cloudinary.com/.../properties/image.webp -> image.webp
+                var uri = new Uri(url);
+                var segments = uri.AbsolutePath.Split('/');
+                return segments.LastOrDefault() ?? string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
     }
 }
