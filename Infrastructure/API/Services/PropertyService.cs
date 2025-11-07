@@ -34,7 +34,6 @@ namespace RealEstate.Infrastructure.API.Services
             try
             {
                 var imageUrls = await LoadPropertyImages(propertyRequestDTO);
-                Console.WriteLine("Image URLs: " + string.Join(", ", imageUrls));
                 return (await _propertyRepository.AddPropertyAsync(propertyRequestDTO.ToProperty(imageUrls))).ToPropertyResponseDto();
             }
             catch (Exception ex)
