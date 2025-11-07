@@ -267,10 +267,8 @@ namespace RealEstate.Infrastructure.API.Services
                         continue;
                     }
 
-                    Console.WriteLine($"📤 Uploading new image: {file.FileName} ({file.Length} bytes)");
                     var imageUrl = await _imageUploadService.UploadImageAsync(file, $"properties/{ownerId}");
                     uploadedImageUrls.Add(imageUrl);
-                    Console.WriteLine($"✅ Uploaded: {imageUrl}");
                 }
             }
             catch (Exception ex)
@@ -290,8 +288,6 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                // Extraer la última parte de la URL después del último '/'
-                // Ejemplo: https://res.cloudinary.com/.../properties/image.webp -> image.webp
                 var uri = new Uri(url);
                 var segments = uri.AbsolutePath.Split('/');
                 return segments.LastOrDefault() ?? string.Empty;
