@@ -96,35 +96,63 @@ namespace RealEstate.Infrastructure.API.Services
 
             try
             {
-                var existingImageNames = existingProperty.Images
-                    .Select(url => GetFileNameFromUrl(url))
-                    .Where(name => !string.IsNullOrEmpty(name))
-                    .ToHashSet();
+                var existingImagesByName = existingProperty.Images
+                    .ToDictionary(GetFileNameFromUrl);
 
-                var newFileNames = propertyRequestDTO.Images?
-                    .Where(img => img != null && img.Length > 0)
-                    .Select(img => img.FileName)
-                    .ToHashSet() ?? new HashSet<string>();
+                var finalImageUrls = new List<string>();
+                var filesToUpload = new List<IFormFile>();
 
-                var imagesToDelete = existingProperty.Images
-                    .Where(url =>
+                if (propertyRequestDTO.Images != null && propertyRequestDTO.Images.Any())
+                {
+                    foreach (var file in propertyRequestDTO.Images)
                     {
-                        var fileName = GetFileNameFromUrl(url);
-                        return !string.IsNullOrEmpty(fileName) && !newFileNames.Contains(fileName);
-                    })
-                    .ToList();
+                        if (file == null || file.Length == 0)
+                        {
+                            continue;
+                        }
 
-                var filesToUpload = propertyRequestDTO.Images?
-                    .Where(img => img != null && img.Length > 0 && !existingImageNames.Contains(img.FileName))
-                    .ToList() ?? new List<IFormFile>();
+                        if (existingImagesByName.TryGetValue(file.FileName, out var existingUrl))
+                        {
+                            finalImageUrls.Add(existingUrl);
+                            existingImagesByName.Remove(file.FileName);
+                        }
+                        else
+                        {
+                            filesToUpload.Add(file);
+                        }
+                    }
+                }
 
-                var newImageUrls = await UploadNewImages(filesToUpload, propertyRequestDTO.IdOwner);
+                if (filesToUpload.Any())
+                {
+                    var newImageUrls = await UploadNewImages(filesToUpload, propertyRequestDTO.IdOwner);
 
-                var imagesToKeep = existingProperty.Images
-                    .Where(url => !imagesToDelete.Contains(url))
-                    .ToList();
+                    int newImageIndex = 0;
+                    var finalUrls = new List<string>();
 
-                var finalImageUrls = imagesToKeep.Concat(newImageUrls).ToList();
+                    foreach (var file in propertyRequestDTO.Images!)
+                    {
+                        if (file == null || file.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        var existingIndex = finalImageUrls.FindIndex(url => GetFileNameFromUrl(url) == file.FileName);
+                        if (existingIndex >= 0)
+                        {
+                            finalUrls.Add(finalImageUrls[existingIndex]);
+                        }
+                        else if (newImageIndex < newImageUrls.Count)
+                        {
+                            finalUrls.Add(newImageUrls[newImageIndex]);
+                            newImageIndex++;
+                        }
+                    }
+
+                    finalImageUrls = finalUrls;
+                }
+
+                var imagesToDelete = existingImagesByName.Values.ToList();
 
                 string? coverImageUrl = null;
                 if (propertyRequestDTO.CoverImage != null)
