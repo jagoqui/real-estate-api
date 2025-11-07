@@ -19,6 +19,7 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpPost]
         [SwaggerOperation(Summary = "Creates a new property.")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateProperty([FromForm] PropertyRequestDto propertyRequestDTO)
@@ -59,11 +60,11 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Updates an existing property by its ID.")]
-        [Consumes("application/json")]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateProperty(string id, [FromBody] PropertyRequestDto propertyRequestDTO)
+        public async Task<IActionResult> UpdateProperty(string id, [FromForm] PropertyRequestDto propertyRequestDTO)
         {
             var updatedProperty = await _propertyService.UpdatePropertyAsync(id, propertyRequestDTO);
             if (updatedProperty == null)
