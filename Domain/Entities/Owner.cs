@@ -9,16 +9,16 @@ namespace RealEstate.Domain.Entities
         public string Name { get; set; } = null!;
 
         [BsonElement("Address")]
-        public string? Address { get; set; } = null!;
+        public string? Address { get; set; }
 
         [BsonElement("Phone")]
-        public string? Phone { get; set; } = null!;
+        public string? Phone { get; set; }
 
         [BsonElement("Email")]
-        public string? Email { get; set; } = null!;
+        public string Email { get; set; } = null!;
 
         [BsonElement("Photo")]
-        public string? Photo { get; set; } = null!;
+        public string? Photo { get; set; }
 
         [BsonElement("Birthday")]
         public DateTime? Birthday { get; set; }
