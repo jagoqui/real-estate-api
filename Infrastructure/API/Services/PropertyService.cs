@@ -189,10 +189,29 @@ namespace RealEstate.Infrastructure.API.Services
         {
             List<string> uploadedImageUrls = new List<string>();
 
-            foreach (var image in propertyRequestDTO.Images)
+            if (propertyRequestDTO.Images == null || !propertyRequestDTO.Images.Any())
             {
-                var imageUrl = await _imageUploadService.UploadImageAsync(image, "properties");
-                uploadedImageUrls.Add(imageUrl);
+                return uploadedImageUrls;
+            }
+
+            try
+            {
+                for (int i = 0; i < propertyRequestDTO.Images.Count; i++)
+                {
+                    var image = propertyRequestDTO.Images[i];
+
+                    if (image == null || image.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    var imageUrl = await _imageUploadService.UploadImageAsync(image, $"properties/{propertyRequestDTO.IdOwner}");
+                    uploadedImageUrls.Add(imageUrl);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException($"Error uploading property images: {ex.Message}", ex);
             }
 
             return uploadedImageUrls;
