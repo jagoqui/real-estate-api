@@ -1,4 +1,5 @@
 using RealEstate.Application.Contracts;
+using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services
 {
@@ -22,11 +23,20 @@ namespace RealEstate.Infrastructure.API.Services
             if (string.IsNullOrWhiteSpace(folderName))
                 throw new ArgumentException("The folder name cannot be null or empty.", nameof(folderName));
 
-            var uploadedImageUrl = await _imageRepository.UploadImageAsync(file, folderName, fileName);
+            string uploadedImageUrl;
 
-            if (!string.IsNullOrEmpty(uploadedImageUrl))
+            try
             {
-                await DeleteImageAsync(uploadedImageUrl);
+                uploadedImageUrl = await _imageRepository.UploadImageAsync(file, folderName, fileName);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error uploading image.", ex);
+            }
+
+            if (!string.IsNullOrEmpty(uploadedImageUrl) && !string.IsNullOrEmpty(fileToReplace))
+            {
+                await DeleteImageAsync(fileToReplace);
             }
 
             return uploadedImageUrl;
@@ -40,7 +50,14 @@ namespace RealEstate.Infrastructure.API.Services
             if (string.IsNullOrWhiteSpace(folderName))
                 throw new ArgumentException("The folder name cannot be null or empty.", nameof(folderName));
 
-            return await _imageRepository.UploadImagesAsync(files, folderName);
+            try
+            {
+                return await _imageRepository.UploadImagesAsync(files, folderName);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error uploading images.", ex);
+            }
         }
 
         public async Task<bool> DeleteImageAsync(string imageUrl)
