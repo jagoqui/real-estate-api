@@ -18,6 +18,7 @@ namespace RealEstate.Domain.Entities
         public List<Amenity> Amenities { get; set; } = new List<Amenity>();
         public bool Featured { get; set; } = false;
         public List<string> Images { get; set; } = new List<string>();
+        public string? CoverImage { get; set; }
         public List<string> Views360Url { get; set; } = new List<string>();
         public string City { get; set; } = null!;
         public string State { get; set; } = null!;
