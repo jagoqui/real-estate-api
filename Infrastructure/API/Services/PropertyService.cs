@@ -126,8 +126,11 @@ namespace RealEstate.Infrastructure.API.Services
 
         public async Task DeletePropertyAsync(string id)
         {
-            await EnsurePropertyExistsAsync(id);
+            Property existingProperty = await EnsurePropertyExistsAsync(id);
 
+            await _imageUploadService.DeleteImagesAsync(existingProperty.Images);
+
+            // TODO: Por el momento no esta quedando relacionado con el propertyImage
             try
             {
                 var images = await _propertyImageRepository.GetPropertyImagesByPropertyIdAsync(id);
