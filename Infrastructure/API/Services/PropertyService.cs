@@ -33,7 +33,14 @@ namespace RealEstate.Infrastructure.API.Services
             try
             {
                 var imageUrls = await LoadPropertyImages(propertyRequestDTO);
-                return (await _propertyRepository.AddPropertyAsync(propertyRequestDTO.ToProperty(imageUrls))).ToPropertyResponseDto();
+                string? coverImageUrl = null;
+
+                if (propertyRequestDTO.CoverImage != null)
+                {
+                    coverImageUrl = await _imageUploadService.UploadImageAsync(propertyRequestDTO.CoverImage, $"properties/{propertyRequestDTO.IdOwner}/cover");
+                }
+
+                return (await _propertyRepository.AddPropertyAsync(propertyRequestDTO.ToProperty(imageUrls, coverImageUrl))).ToPropertyResponseDto();
             }
             catch (Exception ex)
             {
@@ -119,7 +126,13 @@ namespace RealEstate.Infrastructure.API.Services
 
                 var finalImageUrls = imagesToKeep.Concat(newImageUrls).ToList();
 
-                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, propertyRequestDTO.ToProperty(finalImageUrls, existingProperty.Id));
+                string? coverImageUrl = null;
+                if (propertyRequestDTO.CoverImage != null)
+                {
+                    coverImageUrl = await _imageUploadService.UploadImageAsync(propertyRequestDTO.CoverImage, $"properties/{propertyRequestDTO.IdOwner}/cover", null, existingProperty.CoverImage);
+                }
+
+                await _propertyRepository.UpdatePropertyAsync(existingProperty.Id, propertyRequestDTO.ToProperty(finalImageUrls, coverImageUrl, existingProperty.Id));
 
                 var propertyUpdated = await _propertyRepository.GetPropertyByIdAsync(id);
 
