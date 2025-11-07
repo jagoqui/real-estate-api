@@ -74,8 +74,8 @@ namespace RealEstate.Infrastructure.API.Controllers
 
         [HttpPatch("{id}/status")]
         [SwaggerOperation(Summary = "Updates the status of an existing property by its ID.")]
-        [Consumes("application/json")]
         [ProducesResponseType(typeof(PropertyResponseDto), StatusCodes.Status200OK)]
+        [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdatePropertyStatus(string id, [FromBody] string status)
