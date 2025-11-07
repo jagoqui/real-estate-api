@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
+using RealEstate.Domain.Enums;
 
 namespace RealEstate.Infrastructure.API.Repositories
 {
@@ -15,12 +16,12 @@ namespace RealEstate.Infrastructure.API.Repositories
 
         public async Task<IEnumerable<Property>> GetPropertiesAsync()
         {
-            return await _properties.Find(_ => true).ToListAsync();
+            return await _properties.Find(static _ => true).ToListAsync();
         }
 
         public async Task<Property?> GetPropertyByIdAsync(string id)
         {
-            return await _properties.Find(p => p.IdProperty == id).FirstOrDefaultAsync();
+            return await _properties.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Property>> GetPropertiesByOwnerIdAsync(string ownerId)
@@ -36,42 +37,62 @@ namespace RealEstate.Infrastructure.API.Repositories
 
         public async Task<Property?> UpdatePropertyAsync(string id, Property property)
         {
-            await _properties.ReplaceOneAsync(p => p.IdProperty == id, property);
+            await _properties.ReplaceOneAsync(p => p.Id == id, property);
             return property;
+        }
+
+        public async Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status)
+        {
+            var update = Builders<Property>.Update.Set(p => p.Status, status);
+
+            await _properties.UpdateOneAsync(p => p.Id == id, update);
+            return await GetPropertyByIdAsync(id);
         }
 
         public async Task DeletePropertyAsync(string id)
         {
-            await _properties.DeleteOneAsync(p => p.IdProperty == id);
+            await _properties.DeleteOneAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
             string? name = null,
             string? address = null,
             decimal? minPrice = null,
-            decimal? maxPrice = null)
+            decimal? maxPrice = null,
+            PropertyStatus? status = null,
+            PropertyTypes? type = null)
         {
             var filterBuilder = Builders<Property>.Filter;
             var filter = filterBuilder.Empty;
 
             if (!string.IsNullOrEmpty(name))
             {
-                filter &= filterBuilder.Regex(p => p.Name, new MongoDB.Bson.BsonRegularExpression(name, "i"));
+                filter &= filterBuilder.Regex(static p => p.Name, new MongoDB.Bson.BsonRegularExpression(name, "i"));
             }
 
             if (!string.IsNullOrEmpty(address))
             {
-                filter &= filterBuilder.Regex(p => p.Address, new MongoDB.Bson.BsonRegularExpression(address, "i"));
+                filter &= filterBuilder.Regex(static p => p.Address, new MongoDB.Bson.BsonRegularExpression(address, "i"));
             }
 
             if (minPrice.HasValue)
             {
-                filter &= filterBuilder.Gte(p => p.Price, minPrice.Value);
+                filter &= filterBuilder.Gte(static p => p.Price, minPrice.Value);
             }
 
             if (maxPrice.HasValue)
             {
-                filter &= filterBuilder.Lte(p => p.Price, maxPrice.Value);
+                filter &= filterBuilder.Lte(static p => p.Price, maxPrice.Value);
+            }
+
+            if (status.HasValue)
+            {
+                filter &= filterBuilder.Eq(static p => p.Status, status.Value);
+            }
+
+            if (type.HasValue)
+            {
+                filter &= filterBuilder.Eq(static p => p.Type, type.Value);
             }
 
             return await _properties.Find(filter).ToListAsync();

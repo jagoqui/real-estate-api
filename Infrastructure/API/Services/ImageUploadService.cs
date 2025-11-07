@@ -1,4 +1,5 @@
 using RealEstate.Application.Contracts;
+using RealEstate.Infrastructure.API.Exceptions;
 
 namespace RealEstate.Infrastructure.API.Services
 {
@@ -14,7 +15,7 @@ namespace RealEstate.Infrastructure.API.Services
             _imageRepository = imageRepository;
         }
 
-        public async Task<string> UploadImageAsync(IFormFile file, string folderName, string? fileName = null)
+        public async Task<string> UploadImageAsync(IFormFile file, string folderName, string? fileName = null, string? fileToReplace = null)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("The file cannot be null or empty.", nameof(file));
@@ -22,7 +23,23 @@ namespace RealEstate.Infrastructure.API.Services
             if (string.IsNullOrWhiteSpace(folderName))
                 throw new ArgumentException("The folder name cannot be null or empty.", nameof(folderName));
 
-            return await _imageRepository.UploadImageAsync(file, folderName, fileName);
+            string uploadedImageUrl;
+
+            try
+            {
+                uploadedImageUrl = await _imageRepository.UploadImageAsync(file, folderName, fileName);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error uploading image.", ex);
+            }
+
+            if (!string.IsNullOrEmpty(uploadedImageUrl) && !string.IsNullOrEmpty(fileToReplace))
+            {
+                await DeleteImageAsync(fileToReplace);
+            }
+
+            return uploadedImageUrl;
         }
 
         public async Task<List<string>> UploadImagesAsync(List<IFormFile> files, string folderName)
@@ -33,7 +50,14 @@ namespace RealEstate.Infrastructure.API.Services
             if (string.IsNullOrWhiteSpace(folderName))
                 throw new ArgumentException("The folder name cannot be null or empty.", nameof(folderName));
 
-            return await _imageRepository.UploadImagesAsync(files, folderName);
+            try
+            {
+                return await _imageRepository.UploadImagesAsync(files, folderName);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException("Error uploading images.", ex);
+            }
         }
 
         public async Task<bool> DeleteImageAsync(string imageUrl)
@@ -46,6 +70,14 @@ namespace RealEstate.Infrastructure.API.Services
             }
 
             return await _imageRepository.DeleteImageAsync(publicId);
+        }
+
+        public async Task DeleteImagesAsync(List<string> imagesUrls)
+        {
+            foreach (var imageUrl in imagesUrls)
+            {
+                await DeleteImageAsync(imageUrl);
+            }
         }
 
         private string? GetPublicIdFromUrl(string imageUrl)

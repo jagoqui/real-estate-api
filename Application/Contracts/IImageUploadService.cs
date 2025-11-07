@@ -11,8 +11,9 @@ namespace RealEstate.Application.Contracts
         /// <param name="file">Image file to upload.</param>
         /// <param name="folderName">Name of the folder where the image will be saved.</param>
         /// <param name="fileName">Optional name for the uploaded file.</param>
+        /// <param name="fileToReplace">Optional URL or path of an existing file to replace.</param>
         /// <returns>A task representing the operation and containing the URL or path of the uploaded image.</returns>
-        Task<string> UploadImageAsync(IFormFile file, string folderName, string? fileName = null);
+        Task<string> UploadImageAsync(IFormFile file, string folderName, string? fileName = null, string? fileToReplace = null);
 
         /// <summary>
         /// Validates and uploads multiple images using their original names.
@@ -28,5 +29,12 @@ namespace RealEstate.Application.Contracts
         /// <param name="imageUrl">The URL of the image to delete.</param>
         /// <returns>A task representing the operation and containing a boolean indicating success or failure.</returns>
         Task<bool> DeleteImageAsync(string imageUrl);
+
+        /// <summary>
+        /// Deletes unused images by comparing existing images with used images.
+        /// </summary>
+        /// <param name="imagesUrls">List of image URLs to delete.</param>
+        /// <returns>A task representing the operation.</returns>
+        Task DeleteImagesAsync(List<string> imagesUrls);
     }
 }
