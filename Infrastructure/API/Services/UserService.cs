@@ -101,7 +101,6 @@ namespace RealEstate.Application.Services
             });
         }
 
-        // TODO: Revisar problema al guardar la imagen, cambiar de base64 a File
         public async Task<UserDto> UpdateAsync(string id, UserWithFileDto user)
         {
             if (id != user.Id)
