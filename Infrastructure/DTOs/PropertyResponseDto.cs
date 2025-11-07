@@ -22,6 +22,7 @@ namespace RealEstate.Infrastructure.DTOs
         public List<AmenityDto> Amenities { get; set; } = new();
         public bool Featured { get; set; } = false;
         public List<string> Images { get; set; } = new();
+        public string? CoverImage { get; set; }
         public List<string> Views360Url { get; set; } = new();
         public string City { get; set; } = null!;
         public string State { get; set; } = null!;

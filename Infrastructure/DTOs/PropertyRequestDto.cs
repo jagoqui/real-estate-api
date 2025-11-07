@@ -25,5 +25,6 @@ namespace RealEstate.Infrastructure.DTOs
         public string Status { get; set; } = nameof(PropertyStatus.AVAILABLE);
         public string Type { get; set; } = nameof(PropertyTypes.OTHER);
         public List<IFormFile>? Images { get; set; }
+        public IFormFile? CoverImage { get; set; }
     }
 }
