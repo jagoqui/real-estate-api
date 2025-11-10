@@ -13,12 +13,6 @@ namespace RealEstate.Application.Contracts
         Task<PropertyResponseDto> UpdatePropertyAsync(string id, PropertyRequestDto property);
         Task<PropertyResponseDto?> UpdatePropertyStatusAsync(string id, string status);
         Task DeletePropertyAsync(string id);
-        Task<IEnumerable<PropertyResponseDto>> GetPropertiesByFilterAsync(
-            string? name = null,
-            string? address = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            PropertyStatus? status = null,
-            PropertyTypes? type = null);
+        Task<IEnumerable<PropertyResponseDto>> GetPropertiesByFilterAsync(PropertyFiltersRequestDto filters);
     }
 }
