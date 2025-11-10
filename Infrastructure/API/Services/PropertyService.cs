@@ -219,16 +219,11 @@ namespace RealEstate.Infrastructure.API.Services
         }
 
         public async Task<IEnumerable<PropertyResponseDto>> GetPropertiesByFilterAsync(
-            string? name = null,
-            string? address = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            PropertyStatus? status = null,
-            PropertyTypes? type = null)
+            PropertyFiltersRequestDto filters)
         {
             try
             {
-                return (await _propertyRepository.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status, type)).Select(p => p.ToPropertyResponseDto());
+                return (await _propertyRepository.GetPropertiesByFilterAsync(filters.ToPropertyFiltersDto())).Select(p => p.ToPropertyResponseDto());
             }
             catch (Exception ex)
             {
