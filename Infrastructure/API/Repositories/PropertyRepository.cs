@@ -54,48 +54,111 @@ namespace RealEstate.Infrastructure.API.Repositories
             await _properties.DeleteOneAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
-            string? name = null,
-            string? address = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            PropertyStatus? status = null,
-            PropertyTypes? type = null)
+        public async Task<IEnumerable<Property>> GetPropertiesByFilterAsync(PropertyFiltersDto filters)
         {
             var filterBuilder = Builders<Property>.Filter;
-            var filter = filterBuilder.Empty;
+            var filterList = new List<FilterDefinition<Property>>();
 
-            if (!string.IsNullOrEmpty(name))
+            // Handle Name, Address, and Location as OR condition
+            var textFilters = new List<FilterDefinition<Property>>();
+
+            if (!string.IsNullOrEmpty(filters.Name))
             {
-                filter &= filterBuilder.Regex(static p => p.Name, new MongoDB.Bson.BsonRegularExpression(name, "i"));
+                textFilters.Add(filterBuilder.Or(
+                    filterBuilder.Regex(p => p.Name, new MongoDB.Bson.BsonRegularExpression(filters.Name, "i")),
+                    filterBuilder.Regex(p => p.Address, new MongoDB.Bson.BsonRegularExpression(filters.Name, "i")),
+                    filterBuilder.Regex(p => p.City, new MongoDB.Bson.BsonRegularExpression(filters.Name, "i")),
+                    filterBuilder.Regex(p => p.State, new MongoDB.Bson.BsonRegularExpression(filters.Name, "i")),
+                    filterBuilder.Regex(p => p.Location.DisplayName, new MongoDB.Bson.BsonRegularExpression(filters.Name, "i"))));
             }
 
-            if (!string.IsNullOrEmpty(address))
+            if (!string.IsNullOrEmpty(filters.Address))
             {
-                filter &= filterBuilder.Regex(static p => p.Address, new MongoDB.Bson.BsonRegularExpression(address, "i"));
+                textFilters.Add(filterBuilder.Regex(p => p.Address, new MongoDB.Bson.BsonRegularExpression(filters.Address, "i")));
             }
 
-            if (minPrice.HasValue)
+            if (!string.IsNullOrEmpty(filters.Location))
             {
-                filter &= filterBuilder.Gte(static p => p.Price, minPrice.Value);
+                textFilters.Add(filterBuilder.Regex(p => p.Location.DisplayName, new MongoDB.Bson.BsonRegularExpression(filters.Location, "i")));
             }
 
-            if (maxPrice.HasValue)
+            if (textFilters.Any())
             {
-                filter &= filterBuilder.Lte(static p => p.Price, maxPrice.Value);
+                filterList.Add(filterBuilder.Or(textFilters));
             }
 
-            if (status.HasValue)
+            if (filters.MinPrice.HasValue)
             {
-                filter &= filterBuilder.Eq(static p => p.Status, status.Value);
+                filterList.Add(filterBuilder.Gte(p => p.Price, filters.MinPrice.Value));
             }
 
-            if (type.HasValue)
+            if (filters.MaxPrice.HasValue)
             {
-                filter &= filterBuilder.Eq(static p => p.Type, type.Value);
+                filterList.Add(filterBuilder.Lte(p => p.Price, filters.MaxPrice.Value));
             }
 
-            return await _properties.Find(filter).ToListAsync();
+            if (filters.MinBedrooms.HasValue)
+            {
+                filterList.Add(filterBuilder.Gte(p => p.Bedrooms, filters.MinBedrooms.Value));
+            }
+
+            if (filters.MaxBedrooms.HasValue)
+            {
+                filterList.Add(filterBuilder.Lte(p => p.Bedrooms, filters.MaxBedrooms.Value));
+            }
+
+            if (filters.MinBathrooms.HasValue)
+            {
+                filterList.Add(filterBuilder.Gte(p => p.Bathrooms, filters.MinBathrooms.Value));
+            }
+
+            if (filters.MaxBathrooms.HasValue)
+            {
+                filterList.Add(filterBuilder.Lte(p => p.Bathrooms, filters.MaxBathrooms.Value));
+            }
+
+            if (filters.MinArea.HasValue)
+            {
+                filterList.Add(filterBuilder.Gte(p => p.AreaSqm, filters.MinArea.Value));
+            }
+
+            if (filters.MaxArea.HasValue)
+            {
+                filterList.Add(filterBuilder.Lte(p => p.AreaSqm, filters.MaxArea.Value));
+            }
+
+            if (filters.MinYear.HasValue)
+            {
+                filterList.Add(filterBuilder.Gte(p => p.Year, filters.MinYear.Value));
+            }
+
+            if (filters.MaxYear.HasValue)
+            {
+                filterList.Add(filterBuilder.Lte(p => p.Year, filters.MaxYear.Value));
+            }
+
+            if (filters.PropertyStatus.HasValue)
+            {
+                filterList.Add(filterBuilder.Eq(p => p.Status, filters.PropertyStatus.Value));
+            }
+
+            if (filters.PropertyType.HasValue)
+            {
+                filterList.Add(filterBuilder.Eq(p => p.Type, filters.PropertyType.Value));
+            }
+
+            FilterDefinition<Property> finalFilter;
+
+            if (filterList.Any())
+            {
+                finalFilter = filterBuilder.And(filterList);
+            }
+            else
+            {
+                finalFilter = filterBuilder.Empty;
+            }
+
+            return await _properties.Find(finalFilter).ToListAsync();
         }
     }
 }
