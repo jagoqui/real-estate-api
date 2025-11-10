@@ -82,5 +82,27 @@ namespace RealEstate.Application.Adapters
                 UpdatedAt = property.UpdatedAt,
             };
         }
+
+        public static PropertyFiltersDto ToPropertyFiltersDto(this PropertyFiltersRequestDto dto)
+        {
+            return new PropertyFiltersDto
+            {
+                Name = dto.Name,
+                Address = dto.Address,
+                Location = dto.Location,
+                MinPrice = dto.MinPrice,
+                MaxPrice = dto.MaxPrice,
+                MinBedrooms = dto.MinBedrooms,
+                MaxBedrooms = dto.MaxBedrooms,
+                MinBathrooms = dto.MinBathrooms,
+                MaxBathrooms = dto.MaxBathrooms,
+                MinArea = dto.MinArea,
+                MaxArea = dto.MaxArea,
+                MinYear = dto.MinYear,
+                MaxYear = dto.MaxYear,
+                PropertyType = !string.IsNullOrEmpty(dto.Type) && Enum.TryParse<PropertyTypes>(dto.Type, out var type) ? type : null,
+                PropertyStatus = !string.IsNullOrEmpty(dto.Status) && Enum.TryParse<PropertyStatus>(dto.Status, out var status) ? status : null,
+            };
+        }
     }
 }

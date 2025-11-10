@@ -118,14 +118,9 @@ namespace RealEstate.Infrastructure.API.Controllers
         [SwaggerOperation(Summary = "Retrieves properties based on optional filters: name, address, minPrice, maxPrice.")]
         [ProducesResponseType(typeof(IEnumerable<PropertyResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPropertiesByFilter(
-            [FromQuery] string? name = null,
-            [FromQuery] string? address = null,
-            [FromQuery] decimal? minPrice = null,
-            [FromQuery] decimal? maxPrice = null,
-            [FromQuery] PropertyStatus? status = null,
-            [FromQuery] PropertyTypes? type = null)
+            [FromQuery] PropertyFiltersRequestDto filters)
         {
-            var properties = await _propertyService.GetPropertiesByFilterAsync(name, address, minPrice, maxPrice, status, type);
+            var properties = await _propertyService.GetPropertiesByFilterAsync(filters);
             return Ok(properties);
         }
     }

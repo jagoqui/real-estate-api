@@ -1,5 +1,6 @@
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
 
 namespace RealEstate.Application.Contracts
 {
@@ -13,11 +14,6 @@ namespace RealEstate.Application.Contracts
         Task<Property?> UpdatePropertyStatusAsync(string id, PropertyStatus status);
         Task DeletePropertyAsync(string id);
         Task<IEnumerable<Property>> GetPropertiesByFilterAsync(
-            string? name = null,
-            string? address = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            PropertyStatus? status = null,
-            PropertyTypes? type = null);
+            PropertyFiltersDto filters);
     }
 }
