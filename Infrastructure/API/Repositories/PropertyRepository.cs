@@ -2,6 +2,7 @@ using MongoDB.Driver;
 using RealEstate.Application.Contracts;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
 
 namespace RealEstate.Infrastructure.API.Repositories
 {

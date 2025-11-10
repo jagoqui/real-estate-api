@@ -1,5 +1,6 @@
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Enums;
+using RealEstate.Infrastructure.DTOs;
 
 namespace RealEstate.Application.Contracts
 {
